@@ -1,0 +1,2 @@
+# block-s-resources
+web
