@@ -1,457 +1,123 @@
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCOP Protocol - Licitación y Trazabilidad Ambiental</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+
     <style>
         :root {
             --primary-color: #2E7D32;
-@@ -15,30 +16,25 @@
+            --secondary-color: #66BB6A;
+            --accent-color: #4CAF50;
             --dark-color: #1B5E20;
             --light-bg: #F1F8E9;
+            --licitacion-color: #546E7A;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; }
+        
+        /* --- Navbar --- */
+        .navbar { background-color: var(--primary-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .navbar-brand, .nav-link { color: white !important; }
+        .nav-link.active { background-color: var(--secondary-color); border-radius: 5px; }
+
+        /* --- Hero Section --- */
+        .hero-section { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 60px 0; margin-bottom: 30px; }
+        .fund-flow { display: flex; justify-content: space-between; align-items: center; margin: 40px 0; position: relative; }
+        .fund-flow::before { content: ''; position: absolute; top: 50%; left: 10%; right: 10%; height: 3px; background: linear-gradient(90deg, var(--secondary-color), var(--accent-color)); z-index: 1; }
+        .fund-step { background-color: white; border: 3px solid var(--primary-color); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; z-index: 2; position: relative; font-size: 1.5rem; color: var(--primary-color); }
+        .fund-step.active { background-color: var(--primary-color); color: white; }
+        .fund-step-label { position: absolute; bottom: -25px; white-space: nowrap; font-size: 0.8rem; width: 100px; text-align: center; color: white; font-weight: 500; }
+        @media (max-width: 768px) {
+            .fund-flow { flex-direction: column; height: auto; }
+            .fund-flow::before { width: 2px; height: 100%; top: 0; left: 50%; }
+            .fund-step { margin: 15px 0; }
+            .fund-step-label { bottom: auto; left: 70px; top: 50%; transform: translateY(-50%); text-align: left; }
         }
 
-        .navbar {
-            background-color: var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            color: white !important;
-        }
-
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 60px 0;
-            margin-bottom: 30px;
-        }
-
-        .stats-card {
+        /* --- Cards & Components --- */
+        .stats-card, .project-card, .filter-section, .about-section, .contact-section, .licitacion-card {
             background: white;
             border-radius: 10px;
-@@ -47,239 +43,277 @@
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-        }
-
-        .stats-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stats-card .card-icon {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .project-card {
-            border-radius: 10px;
-            border-radius: 15px;
-            overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            padding: 20px;
             margin-bottom: 25px;
             transition: transform 0.3s, box-shadow 0.3s;
-            background: white;
         }
-
-        .project-card:hover {
+        .stats-card:hover, .project-card:hover, .licitacion-card:hover {
             transform: translateY(-5px);
-            transform: translateY(-8px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
         }
-        .project-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .project-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px;
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .project-body {
-            padding: 20px;
-        }
-
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 12px 0;
-        }
-        .tag {
-            background-color: var(--light-bg);
-            color: var(--dark-color);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .amount-highlight {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-        .progress-container {
-            margin: 20px 0;
-            margin: 15px 0;
-        }
-
-        .progress {
-            height: 25px;
-            border-radius: 15px;
-            height: 10px;
-            border-radius: 5px;
-            background-color: #e9ecef;
-        }
-
-        .progress-bar {
-            background-color: var(--secondary-color);
-            border-radius: 15px;
-            font-weight: bold;
-            border-radius: 5px;
-        }
-
-        .milestone {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-        }
-
-        .milestone-icon {
-            width: 40px;
-            height: 40px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: var(--secondary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            margin-right: 12px;
-            flex-shrink: 0;
-            font-size: 0.8rem;
-        }
-
-        .milestone-icon.completed {
-            background-color: var(--accent-color);
-        }
-
-        .milestone-content {
-            flex-grow: 1;
-        }
-
-        .transaction-item {
-            padding: 10px;
-            border-left: 3px solid var(--secondary-color);
-            margin-bottom: 10px;
-            background-color: white;
-            background-color: #f8f9fa;
-            border-radius: 0 5px 5px 0;
-            font-size: 0.9rem;
-        }
-
-        .filter-section {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        #map {
-            height: 400px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .tab-content {
-            padding: 20px;
-            background-color: white;
-            border-radius: 0 0 10px 10px;
-        }
-
-        .nav-tabs {
-            border-bottom: 2px solid var(--secondary-color);
-        }
-
-        .nav-tabs .nav-link {
-            color: var(--primary-color);
-            font-weight: 500;
-            border: none;
-            border-bottom: 3px solid transparent;
-        }
-
-        .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            background-color: transparent;
-            border-bottom: 3px solid var(--primary-color);
-        }
-
-        .footer {
-            background-color: var(--dark-color);
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-        }
-
-        .badge-status {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
-        .status-pending {
-            background-color: #FFF3E0;
-            color: #E65100;
-        }
-
-        .status-in-progress {
-            background-color: #E3F2FD;
-            color: #0D47A1;
-        }
-
-        .status-verified {
-            background-color: #E8F5E9;
-            color: #1B5E20;
-        }
-
-        .status-closed {
-            background-color: #F3E5F5;
-            color: #4A148C;
+        .stats-card .card-icon { font-size: 2.5rem; color: var(--primary-color); }
+        .project-img, .licitacion-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px;}
+        .project-header, .licitacion-header { font-size: 1.1rem; font-weight: 600; color: var(--primary-color); }
+        .project-tags, .licitacion-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+        .tag { background-color: var(--light-bg); color: var(--dark-color); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
+        .amount-highlight { font-size: 1.4rem; font-weight: bold; color: var(--primary-color); }
+        .progress { height: 10px; border-radius: 5px; }
+        .progress-bar { background-color: var(--secondary-color); }
+        .badge-status { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; }
         .status-pending { background-color: #FFF3E0; color: #E65100; }
         .status-in-progress { background-color: #E3F2FD; color: #0D47A1; }
         .status-verified { background-color: #E8F5E9; color: #1B5E20; }
         .status-closed { background-color: #F3E5F5; color: #4A148C; }
-        .detail-modal .modal-header { background-color: var(--primary-color); color: white; }
-       
-        .fund-flow { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin: 20px 0; 
-            position: relative; 
-        }
-        .fund-flow::before { 
-            content: ''; 
-            position: absolute; 
-            top: 50%; 
-            left: 0; 
-            right: 0; 
-            height: 3px; 
-            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color)); 
-            z-index: 1; 
-        }
-        .fund-step { 
-            background-color: white; 
-            border: 3px solid var(--primary-color); 
-            border-radius: 50%; 
-            width: 60px; 
-            height: 60px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 2; 
-            position: relative; 
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
+        .status-study { background-color: #EDE7F6; color: #4527A0; }
+        .status-requesting { background-color: #FFF8E1; color: #F57F17; }
+        .status-licitacion { background-color: #ECEFF1; color: var(--licitacion-color); font-weight: bold; border: 1px solid #cfd8dc; }
+        
+        .budget-list { list-style: none; padding-left: 0; }
+        .budget-list li { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
+        .budget-list li:last-child { border-bottom: none; font-weight: bold; color: var(--primary-color); }
 
-        .detail-modal .modal-header {
-            background-color: var(--primary-color);
-        .fund-step.active { 
-            background-color: var(--primary-color); 
-            color: white; 
-        }
-        .fund-step-label { 
-            position: absolute; 
-            bottom: -30px; 
-            white-space: nowrap; 
-            font-size: 0.85rem; 
-            width: 120px; 
-            text-align: center; 
-            color: white;
-            font-weight: 500;
-        }
+        /* --- Map & Traceability --- */
+        #map { height: 400px; border-radius: 10px; }
+        .nav-tabs .nav-link.active { border-bottom: 3px solid var(--primary-color); }
+        .trace-step { position: relative; padding-left: 40px; margin-bottom: 20px; }
+        .trace-step::before { content: ''; position: absolute; left: 15px; top: 30px; bottom: -20px; width: 2px; background-color: var(--secondary-color); }
+        .trace-step:last-child::before { display: none; }
+        .trace-icon { position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
 
-        .fund-flow {
-        .wallet-info {
+        /* --- Call to Action Section --- */
+        .cta-section {
+            background: linear-gradient(rgba(46, 125, 50, 0.8), rgba(46, 125, 50, 0.8)), url('https://picsum.photos/seed/forest_team/1920/600.jpg') no-repeat center center/cover;
             color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-            gap: 10px;
+            padding: 80px 0;
+            margin-top: 50px;
         }
-        .network-badge {
-            background-color: var(--accent-color);
-            color: var(--dark-color);
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
+        .cta-section h2 { font-size: 2.5rem; font-weight: bold; }
+        .cta-section p { font-size: 1.2rem; }
+
+        /* --- Footer & Modals --- */
+        .footer { background-color: var(--dark-color); color: white; padding: 30px 0; margin-top: 0; }
+        .modal-header { background-color: var(--primary-color); color: white; }
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .alert-container {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 1050;
-            max-width: 350px;
-        }
-        .connection-status {
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-        .trace-step {
-            position: relative;
-            padding-left: 40px;
-            margin-bottom: 20px;
-        }
-
-        .fund-flow::before {
-        .trace-step::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: #e0e0e0;
-            z-index: 1;
-            left: 15px;
-            top: 30px;
-            bottom: -20px;
-            width: 2px;
-            background-color: var(--secondary-color);
-        }
-
-        .fund-step {
-            background-color: white;
-            border: 2px solid var(--primary-color);
-        .trace-step:last-child::before {
-            display: none;
-        }
-        .trace-icon {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            position: relative;
-            font-size: 0.9rem;
-        }
-
-        .fund-step.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .fund-step-label {
-            position: absolute;
-            bottom: -25px;
-            white-space: nowrap;
-            font-size: 0.8rem;
-            width: 100px;
-            text-align: center;
-        .about-section, .contact-section {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-        }
-
-        @media (max-width: 768px) {
-            .fund-flow {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .fund-flow::before {
-                width: 2px;
-                height: 100%;
-                top: 0;
-                left: 50%;
-            }
-
-            .fund-step {
-                margin: 15px 0;
-            }
-
-            .fund-step-label {
-                bottom: auto;
-                left: 70px;
-                top: 50%;
-                transform: translateY(-50%);
-                text-align: left;
-            }
-        .contact-form .form-control {
-            margin-bottom: 15px;
-        }
+        .alert-container { position: fixed; top: 80px; right: 20px; z-index: 1050; max-width: 350px; }
     </style>
 </head>
 <body>
-    <!-- Alert Container -->
+
+    <!-- Alert Container for Notifications -->
     <div class="alert-container" id="alertContainer"></div>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-@@ -291,17 +325,13 @@
+            <a class="navbar-brand fw-bold" href="#inicio">CCOP Protocol</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#inicio">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#proyectos">Proyectos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#trazabilidad">Trazabilidad</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#nosotros">Nosotros</a>
                     <li class="nav-item"><a class="nav-link active" href="#inicio">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#proyectos">Proyectos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#licitacion">En Licitación</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#proyectos">Proyectos Activos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#trazabilidad">Trazabilidad</a></li>
                     <li class="nav-item"><a class="nav-link" href="#quienes-somos">Quienes Somos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contactanos">Contáctanos</a></li>
@@ -460,1096 +126,321 @@
                     </li>
                 </ul>
             </div>
-@@ -314,7 +344,7 @@
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">Trazabilidad Transparente de Recursos Ambientales</h1>
-                    <p class="lead mb-4">Sigue el camino de cada peso destinado a proyectos ambientales en Colombia a través de nuestra plataforma blockchain. Transparencia total desde la emisión hasta el impacto.</p>
-                    <p class="lead mb-4">Conecta tu billetera para interactuar con la blockchain de Celo y seguir el camino de cada peso destinado a proyectos ambientales en Colombia.</p>
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-light btn-lg" onclick="scrollToSection('proyectos')">
-                            <i class="bi bi-search me-2"></i>Explorar Proyectos
-@@ -331,7 +361,7 @@ <h1 class="display-4 fw-bold mb-4">Trazabilidad Transparente de Recursos Ambient
-                            <span class="fund-step-label">Fondos COP</span>
-                        </div>
-                        <div class="fund-step active">
-                            <i class="bi bi-currency-bitcoin"></i>
-                            <i class="bi bi-currency-exchange"></i>
-                            <span class="fund-step-label">Conversión CCOP</span>
-                        </div>
-                        <div class="fund-step active">
-@@ -353,186 +383,110 @@ <h1 class="display-4 fw-bold mb-4">Trazabilidad Transparente de Recursos Ambient
-        <div class="row">
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon">
-                        <i class="bi bi-currency-exchange"></i>
-                    </div>
-                    <h3 class="fw-bold">$2.5B</h3>
-                    <div class="card-icon"><i class="bi bi-currency-exchange"></i></div>
-                    <h3 class="fw-bold" id="totalFunds">$2.5B</h3>
-                    <p class="text-muted">Recursos Totales</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon">
-                        <i class="bi bi-diagram-3"></i>
-                    </div>
-                    <h3 class="fw-bold">142</h3>
-                    <div class="card-icon"><i class="bi bi-diagram-3"></i></div>
-                    <h3 class="fw-bold" id="activeProjects">142</h3>
-                    <p class="text-muted">Proyectos Activos</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon">
-                        <i class="bi bi-people"></i>
-                    </div>
-                    <div class="card-icon"><i class="bi bi-people"></i></div>
-                    <h3 class="fw-bold">28</h3>
-                    <p class="text-muted">Organizaciones</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon">
-                        <i class="bi bi-check-circle"></i>
-                    </div>
-                    <div class="card-icon"><i class="bi bi-check-circle"></i></div>
-                    <h3 class="fw-bold">89%</h3>
-                    <p class="text-muted">Trazabilidad Completa</p>
-                </div>
-            </div>
         </div>
-    </section>
+    </nav>
 
-    <!-- Map Section -->
-    <section class="container mb-5">
-        <h2 class="mb-4">Proyectos en el Territorio Nacional</h2>
-        <div id="map"></div>
-    </section>
-
-    <!-- Filter Section -->
-    <section class="container filter-section" id="proyectos">
-        <h2 class="mb-4">Explorar Proyectos</h2>
-        <div class="row">
-            <div class="col-md-3">
-                <div class="mb-3">
-                    <label for="regionFilter" class="form-label">Región</label>
-                    <select class="form-select" id="regionFilter">
-                        <option value="">Todas las regiones</option>
-                        <option value="andina">Región Andina</option>
-                        <option value="caribe">Región Caribe</option>
-                        <option value="pacifica">Región Pacífica</option>
-                        <option value="orinoquia">Región Orinoquía</option>
-                        <option value="amazonia">Región Amazonía</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="mb-3">
-                    <label for="categoryFilter" class="form-label">Categoría</label>
-                    <select class="form-select" id="categoryFilter">
-                        <option value="">Todas las categorías</option>
-                        <option value="reforestacion">Reforestación</option>
-                        <option value="conservacion">Conservación</option>
-                        <option value="investigacion">Investigación</option>
-                        <option value="educacion">Educación Ambiental</option>
-                        <option value="energia">Energías Renovables</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="mb-3">
-                    <label for="statusFilter" class="form-label">Estado</label>
-                    <select class="form-select" id="statusFilter">
-                        <option value="">Todos los estados</option>
-                        <option value="pending">Pendiente</option>
-                        <option value="in-progress">En Ejecución</option>
-                        <option value="verified">Verificado</option>
-                        <option value="closed">Cerrado</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="mb-3">
-                    <label for="searchInput" class="form-label">Buscar</label>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Nombre del proyecto...">
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <button class="btn btn-primary" onclick="applyFilters()">
-                    <i class="bi bi-funnel me-2"></i>Aplicar Filtros
+    <!-- Hero Section -->
+    <section class="hero-section" id="inicio">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">Financia y Sigue el Impacto Ambiental Real</h1>
+            <p class="lead mb-4">Participa en licitaciones transparentes y sigue cada peso destinado a proyectos que transforman Colombia. Conecta tu billetera y sé parte del cambio.</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <button class="btn btn-light btn-lg" onclick="scrollToSection('licitacion')">
+                    <i class="bi bi-bullseye me-2"></i>Ver Proyectos en Licitación
                 </button>
-                <button class="btn btn-outline-secondary ms-2" onclick="resetFilters()">
-                    <i class="bi bi-arrow-clockwise me-2"></i>Restablecer
+                <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#howItWorksModal">
+                    <i class="bi bi-play-circle me-2"></i>Cómo Funciona
                 </button>
             </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="container mb-5">
-    <section class="container mb-5" id="proyectos">
-        <h2 class="mb-4">Explorar Proyectos</h2>
-        <div class="row" id="projectsContainer">
-            <!-- Project cards will be dynamically loaded here -->
-        </div>
-        <div class="text-center mt-4">
-            <button class="btn btn-outline-primary" onclick="loadMoreProjects()">
-                <i class="bi bi-arrow-down-circle me-2"></i>Cargar Más Proyectos
-            </button>
-            <!-- Proyectos se cargarán aquí dinámicamente -->
-        </div>
-    </section>
-
-    <!-- Traceability Section -->
-    <!-- Trazabilidad Section -->
-    <section class="container mb-5" id="trazabilidad">
-        <h2 class="mb-4">Trazabilidad de Fondos</h2>
-        <ul class="nav nav-tabs" id="traceabilityTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="conversion-tab" data-bs-toggle="tab" data-bs-target="#conversion" type="button" role="tab">Conversión COP → CCOP</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="distribution-tab" data-bs-toggle="tab" data-bs-target="#distribution" type="button" role="tab">Distribución de Fondos</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="verification-tab" data-bs-toggle="tab" data-bs-target="#verification" type="button" role="tab">Verificación y Auditoría</button>
-            </li>
-        </ul>
-        <div class="tab-content" id="traceabilityTabContent">
-            <div class="tab-pane fade show active" id="conversion" role="tabpanel">
-                <h4 class="mb-3">Proceso de Conversión de Fondos</h4>
-                <p>Los recursos en pesos colombianos (COP) se convierten en tokens CCOP (1:1) para garantizar trazabilidad completa en la blockchain.</p>
-                
-                <div class="table-responsive mt-4">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID Transacción</th>
-                                <th>Fecha</th>
-                                <th>Emisor</th>
-                                <th>Monto COP</th>
-                                <th>Monto CCOP</th>
-                                <th>Hash Blockchain</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="conversionTableBody">
-                            <!-- Table rows will be dynamically loaded -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="fund-flow mt-5">
+                <div class="fund-step active"><i class="bi bi-bullseye"></i><span class="fund-step-label">Licitación</span></div>
+                <div class="fund-step active"><i class="bi bi-cash"></i><span class="fund-step-label">Fondos COP</span></div>
+                <div class="fund-step active"><i class="bi bi-currency-exchange"></i><span class="fund-step-label">Conversión CCOP</span></div>
+                <div class="fund-step active"><i class="bi bi-geo-alt"></i><span class="fund-step-label">Ejecución</span></div>
+                <div class="fund-step active"><i class="bi bi-check-circle"></i><span class="fund-step-label">Verificación</span></div>
             </div>
-            <div class="tab-pane fade" id="distribution" role="tabpanel">
-                <h4 class="mb-3">Distribución de Fondos a Proyectos</h4>
-                <p>Seguimiento de cómo los tokens CCOP se asignan a diferentes proyectos ambientales y se liberan según el cumplimiento de hitos.</p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <canvas id="distributionChart"></canvas>
-                    </div>
-                    <div class="col-md-6">
-                        <div id="distributionDetails">
-                            <!-- Distribution details will be loaded here -->
-        <h2 class="mb-4">Trazabilidad de Recursos</h2>
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <div class="card border-0 shadow">
-                    <div class="card-body p-5">
-                        <h4 class="mb-4">Flujo Completo de un Proyecto</h4>
-                        <div class="trace-step">
-                            <div class="trace-icon"><i class="bi bi-cash"></i></div>
-                            <h6>1. Recepción de Fondos</h6>
-                            <p>Los recursos en COP ingresan al fondo ambiental y se convierten a CCOP en la blockchain.</p>
-                        </div>
-                        <div class="trace-step">
-                            <div class="trace-icon"><i class="bi bi-building"></i></div>
-                            <h6>2. Asignación a Proyecto</h6>
-                            <p>Se aprueba y asigna el monto a un proyecto verificado con contrato inteligente.</p>
-                        </div>
-                        <div class="trace-step">
-                            <div class="trace-icon"><i class="bi bi-geo-alt"></i></div>
-                            <h6>3. Ejecución en Campo</h6>
-                            <p>La organización ejecuta actividades (siembra, educación, monitoreo) y reporta avances.</p>
-                        </div>
-                        <div class="trace-step">
-                            <div class="trace-icon"><i class="bi bi-camera"></i></div>
-                            <h6>4. Verificación Independiente</h6>
-                            <p>Auditores verifican resultados con fotos, GPS y reportes técnicos.</p>
-                        </div>
-                        <div class="trace-step">
-                            <div class="trace-icon"><i class="bi bi-check-circle"></i></div>
-                            <h6>5. Cierre y Liberación</h6>
-                            <p>Se valida el impacto y se registra permanentemente en blockchain.</p>
-                        </div>
-                        <div class="text-center mt-4">
-                            <button class="btn btn-success btn-lg" onclick="openTraceModal()">
-                                <i class="bi bi-eye me-2"></i>Ver Trazabilidad Detallada
-                            </button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Stats Section -->
+        <section class="row text-center mb-5">
+            <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-bullseye"></i></div><h3 class="fw-bold">4</h3><p class="text-muted">Proyectos en Licitación</p></div></div>
+            <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-diagram-3"></i></div><h3 class="fw-bold" id="activeProjects">5</h3><p class="text-muted">Proyectos Activos</p></div></div>
+            <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-currency-exchange"></i></div><h3 class="fw-bold">$2.1B</h3><p class="text-muted">Capital en Movimiento</p></div></div>
+            <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-check-circle"></i></div><h3 class="fw-bold">100%</h3><p class="text-muted">Trazabilidad</p></div></div>
+        </section>
+
+        <!-- Licitación Section -->
+        <section id="licitacion">
+            <h2 class="mb-4">Proyectos en Licitación - Únete a la Causa</h2>
+            <div class="row" id="licitacionContainer">
+                <!-- Licitación cards will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="mb-5">
+            <h2 class="mb-4">Ubicación de Proyectos y Licitaciones</h2>
+            <div id="map"></div>
+        </section>
+
+        <!-- Active Projects Section -->
+        <section id="proyectos">
+            <h2 class="mb-4">Proyectos en Ejecución</h2>
+            <div class="row" id="projectsContainer">
+                <!-- Active project cards will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Traceability Section -->
+        <section class="about-section" id="trazabilidad">
+            <h2 class="mb-4">Trazabilidad de Recursos</h2>
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card border-0 shadow">
+                        <div class="card-body p-5">
+                            <h4 class="mb-4">Flujo Completo de un Proyecto</h4>
+                            <div class="trace-step"><div class="trace-icon"><i class="bi bi-bullseye"></i></div><h6>1. Licitación Pública</h6><p>Los proyectos se publican con presupuesto detallado para atraer financiadores.</p></div>
+                            <div class="trace-step"><div class="trace-icon"><i class="bi bi-cash"></i></div><h6>2. Recepción de Fondos</h6><p>Los recursos en COP ingresan y se convierten a CCOP en la blockchain.</p></div>
+                            <div class="trace-step"><div class="trace-icon"><i class="bi bi-geo-alt"></i></div><h6>3. Ejecución en Campo</h6><p>La organización ejecuta actividades y reporta avances con evidencia.</p></div>
+                            <div class="trace-step"><div class="trace-icon"><i class="bi bi-check-circle"></i></div><h6>4. Verificación y Cierre</h6><p>Se valida el impacto y se registra permanentemente en blockchain.</p></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="verification" role="tabpanel">
-                <h4 class="mb-3">Proceso de Verificación y Auditoría</h4>
-                <p>Cada hito y transacción es verificado por auditores independientes y registrado permanentemente en la blockchain.</p>
-                
-                <div class="timeline mt-4" id="verificationTimeline">
-                    <!-- Timeline items will be dynamically loaded -->
-                </div>
-            </div>
+        </section>
+
+        <!-- Quienes Somos Section -->
+        <section class="about-section" id="quienes-somos">
+            <h2 class="mb-4">Quienes Somos</h2>
+            <p>Somos CCOP, una plataforma innovadora basada en blockchain para la trazabilidad de proyectos ambientales. Garantizamos transparencia total en el uso de recursos, desde la donación hasta el impacto real en el medio ambiente.</p>
+            <ul><li><strong>Misión:</strong> Proporcionar herramientas de trazabilidad inmutable.</li><li><strong>Visión:</strong> Un mundo donde cada peso invertido en el ambiente sea auditable.</li><li><strong>Valores:</strong> Transparencia, innovación y compromiso.</li></ul>
+        </section>
+
+        <!-- Contáctanos Section -->
+        <section class="contact-section" id="contactanos">
+            <h2 class="mb-4">Contáctanos</h2>
+            <p>¿Quieres rastrear tus proyectos o colaborar con nosotros? Envíanos un mensaje.</p>
+            <form id="contactForm">
+                <input type="text" class="form-control mb-3" placeholder="Tu Nombre" required>
+                <input type="email" class="form-control mb-3" placeholder="Tu Email" required>
+                <textarea class="form-control mb-3" rows="5" placeholder="Tu Mensaje" required></textarea>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Call to Action Section -->
+    <section class="cta-section" id="contactanos-cta">
+        <div class="container text-center">
+            <h2 class="mb-4">Impulsa el Cambio con Nosotros</h2>
+            <p class="lead mb-5">
+                <strong>Misión:</strong> Facilitar la financiación transparente y el seguimiento riguroso de proyectos ambientales en Colombia a través de la tecnología blockchain, garantizando que cada recurso genere un impacto medible y duradero.<br><br>
+                <strong>Visión:</strong> Convertirnos en la plataforma líder de confianza que conecta a financiadores, organizaciones y ciudadanos en un ecosistema de sostenibilidad verificable, transformando la manera en que se protegen nuestros recursos naturales.
+            </p>
+            <a href="mailto:contacto@ccop-protocol.com" class="btn btn-warning btn-lg">
+                <i class="bi bi-envelope-fill me-2"></i>Contáctanos para Financiar
+            </a>
         </div>
-    </section>
-
-    <!-- Quienes Somos Section -->
-    <section class="container about-section" id="quienes-somos">
-        <h2 class="mb-4">Quienes Somos</h2>
-        <p>Somos CCOP, una plataforma innovadora basada en blockchain para la trazabilidad de tus proyectos ambientales usando nuestra plataforma. Garantizamos transparencia total en el uso de recursos, desde la donación hasta el impacto real en el medio ambiente. Nuestro equipo de expertos en tecnología y sostenibilidad trabaja para empoderar a organizaciones y ciudadanos en Colombia.</p>
-        <ul>
-            <li><strong>Misión:</strong> Proporcionar herramientas de trazabilidad inmutable para proyectos ecológicos.</li>
-            <li><strong>Visión:</strong> Un mundo donde cada peso invertido en el ambiente sea auditable y efectivo.</li>
-            <li><strong>Valores:</strong> Transparencia, innovación y compromiso ambiental.</li>
-        </ul>
-    </section>
-
-    <!-- Contáctanos Section -->
-    <section class="container contact-section" id="contactanos">
-        <h2 class="mb-4">Contáctanos</h2>
-        <p>¿Quieres rastrear tus proyectos ambientales o colaborar con nosotros? Envíanos un mensaje.</p>
-        <form id="contactForm" class="contact-form">
-            <input type="text" class="form-control" placeholder="Tu Nombre" required>
-            <input type="email" class="form-control" placeholder="Tu Email" required>
-            <textarea class="form-control" rows="5" placeholder="Tu Mensaje" required></textarea>
-            <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer text-center">
         <div class="container">
-@@ -567,27 +521,6 @@ <h5 class="mb-3">Conéctate</h5>
+            <p>&copy; 2024 CCOP Protocol. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <!-- Project Detail Modal -->
-    <div class="modal fade detail-modal" id="projectDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="projectDetailTitle">Detalles del Proyecto</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="projectDetailBody">
-                    <!-- Project details will be loaded here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="viewOnBlockchain()">
-                        <i class="bi bi-box-arrow-up-right me-2"></i>Ver en Blockchain
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Modals -->
     <!-- How It Works Modal -->
     <div class="modal fade" id="howItWorksModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
-@@ -601,585 +534,288 @@ <h5 class="modal-title">Cómo Funciona la Trazabilidad de Recursos</h5>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                                    1. Conversión de Fondos
-                                    1. Conexión a la Blockchain
-                                </button>
-                            </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#howItWorksAccordion">
-                                <div class="accordion-body">
-                                    <p>Los fondos en pesos colombianos (COP) se depositan en una cuenta de custodia y se convierten en tokens CCOP en una proporción 1:1. Esta conversión se registra en la blockchain CELO L2, garantizando inmutabilidad y transparencia.</p>
-                                    <div class="text-center my-3">
-                                        <i class="bi bi-arrow-down-circle fs-1 text-primary"></i>
-                                    </div>
-                                    <p><strong>Ejemplo:</strong> El Ministerio de Ambiente deposita $100,000 COP y recibe 100,000 tokens CCOP equivalentes.</p>
-                                    <p>Conecta tu billetera MetaMask a la red Celo para interactuar de forma segura con el protocolo.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingTwo">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                                    2. Asignación a Proyectos
-                                    2. Lectura de Datos On-Chain
-                                </button>
-                            </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion">
-                                <div class="accordion-body">
-                                    <p>Los tokens CCOP se asignan a proyectos ambientales previamente registrados y verificados. Cada proyecto tiene un identificador único (ProjectID) y define hitos específicos con condiciones de liberación de fondos.</p>
-                                    <div class="text-center my-3">
-                                        <i class="bi bi-arrow-down-circle fs-1 text-primary"></i>
-                                    </div>
-                                    <p><strong>Ejemplo:</strong> El proyecto "Reforestación del Alto Magdalena" recibe una asignación de 10,000 CCOP.</p>
-                                    <p>La dApp lee directamente los contratos en Celo para mostrar proyectos y transacciones en tiempo real.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                                    3. Ejecución y Verificación
-                                    3. Trazabilidad Inmutable
-                                </button>
-                            </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion">
-                                <div class="accordion-body">
-                                    <p>Los beneficiarios ejecutan las actividades del proyecto y suben evidencias (documentos, imágenes, mediciones) a IPFS. Los auditores ambientales verifican cada hito y generan un hash de verificación que se registra en la blockchain.</p>
-                                    <div class="text-center my-3">
-                                        <i class="bi bi-arrow-down-circle fs-1 text-primary"></i>
-                                    </div>
-                                    <p><strong>Ejemplo:</strong> Se verifica la plantación inicial y se genera un hash A1 que se ancla en la blockchain.</p>
-                                    <p>Cada peso y su impacto queda grabado para siempre en la blockchain.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingFour">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
-                                    4. Liberación de Fondos
-                                </button>
-                            </h2>
-                            <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion">
-                                <div class="accordion-body">
-                                    <p>Los contratos inteligentes liberan automáticamente los fondos CCOP una vez que los hitos son verificados. Este proceso elimina demoras burocráticas y garantiza que los fondos se utilicen según lo planeado.</p>
-                                    <div class="text-center my-3">
-                                        <i class="bi bi-arrow-down-circle fs-1 text-primary"></i>
-                                    </div>
-                                    <p><strong>Ejemplo:</strong> Tras verificar el hito inicial, se liberan 2,500 CCOP (25% del total).</p>
-                                </div>
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Cómo Funciona</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <div class="accordion" id="howItWorksAccordion">
+                        <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">1. Explora y Financia</button></h2><div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#howItWorksAccordion"><div class="accordion-body"><p>Explora los proyectos en licitación y elige aquel con el que quieras contribuir. Cada proyecto tiene un presupuesto detallado y un plan de acción claro.</p></div></div></div>
+                        <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">2. Trazabilidad en Blockchain</button></h2><div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion"><div class="accordion-body"><p>Tu financiación se convierte en tokens CCOP y se registra en la blockchain de Celo, permitiendo un seguimiento transparente e inmutable de cada peso.</p></div></div></div>
+                        <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">3. Verifica el Impacto</button></h2><div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion"><div class="accordion-body"><p>Recibe reportes de progreso y evidencias (fotos, videos, datos) directamente de los equipos en campo. Los auditores independientes validan los resultados.</p></div></div></div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Trazabilidad Detallada Modal -->
-    <div class="modal fade" id="traceModal" tabindex="-1">
+    <!-- Requisitos Modal -->
+    <div class="modal fade" id="requisitosModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title" id="requisitosModalTitle">Requisitos del Proyecto</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body" id="requisitosModalBody">
+                    <!-- Content will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Planos Modal -->
+    <div class="modal fade" id="planosModal" tabindex="-1">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Trazabilidad Completa - Proyecto #142</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Transacciones en Blockchain</h6>
-                            <div class="transaction-item">
-                                <strong>Tx: 0x123...abc</strong><br>
-                                <small>10,000,000 COP → 5,000 CCOP</small>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingFive">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
-                                    5. Auditoría y Trazabilidad Pública
-                                </button>
-                            </h2>
-                            <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion">
-                                <div class="accordion-body">
-                                    <p>Todas las transacciones quedan registradas permanentemente en la blockchain, permitiendo auditorías en tiempo real mediante exploradores de bloques. Cualquier persona puede verificar el flujo completo de los fondos desde su origen hasta su impacto final.</p>
-                                    <div class="text-center my-3">
-                                        <i class="bi bi-check-circle fs-1 text-success"></i>
-                                    </div>
-                                    <p><strong>Ejemplo:</strong> Los ciudadanos pueden consultar cómo se utilizaron los 10,000 CCOP asignados al proyecto y verificar el impacto ambiental generado.</p>
-                                </div>
-                            <div class="transaction-item">
-                                <strong>Tx: 0x456...def</strong><br>
-                                <small>Asignación a Proyecto Reforestación Cauca</small>
-                            </div>
-                            <div class="transaction-item">
-                                <strong>Tx: 0x789...ghi</strong><br>
-                                <small>Verificación de 1,200 árboles plantados</small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h6>Evidencia Física</h6>
-                            <img src="https://via.placeholder.com/600x300?text=Antes+y+Después" class="img-fluid rounded mb-3" alt="Evidencia">
-                            <p><strong>GPS:</strong> 2.4451° N, 76.6123° W</p>
-                            <p><strong>Auditor:</strong> EcoVerifica S.A.S</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='#trazabilidad'">
-                        <i class="bi bi-eye me-2"></i>Ver Trazabilidad
-                    </button>
-                    <button class="btn btn-outline-success">Ver en Celoscan</button>
-                    <button class="btn btn-success">Descargar Reporte PDF</button>
+                <div class="modal-header"><h5 class="modal-title" id="planosModalTitle">Planos del Proyecto</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body" id="planosModalBody">
+                    <!-- Content will be dynamically loaded -->
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   
+
     <script>
-        // Sample project data
-        const projects = [
         // --- CONFIGURACIÓN DE BLOCKCHAIN ---
         const CELO_MAINNET_RPC_URL = "https://forno.celo.org";
         const CELO_CHAIN_ID = 42220;
         const CELO_CHAIN_ID_HEX = "0xa4ec";
-        const CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890";
-        const CONTRACT_ABI = [ /* ... ABI ... */ ];
+        let provider, signer, userAddress = null;
 
-        let provider, signer, contract, userAddress = null;
-
-        // --- DATOS DE PROYECTOS DE EJEMPLO (hasta conectar con blockchain) ---
-        const mockProjects = [
+        // --- DATOS DE PROYECTOS ---
+        const mockLicitacionProjects = [
             {
-                id: "PROY-2023-001",
-                name: "Reforestación del Alto Magdalena",
-                organization: "Fundación Ambiental del Magdalena",
-                category: "reforestacion",
-                region: "andina",
-                id: 142,
-                title: "Reforestación Río Cauca",
-                image: "https://via.placeholder.com/600x400?text=Reforestación+Río+Cauca",
-                applications: ["Reforestación", "Conservación de suelos", "Captura de carbono"],
-                amount: "150,000,000",
-                progress: 78,
-                status: "in-progress",
-                totalAmount: 100000,
-                releasedAmount: 75000,
-                description: "Proyecto de reforestación de 500 hectáreas en la cuenca alta del río Magdalena.",
-                milestones: [
-                    { name: "Preparación del terreno", completed: true, date: "2023-01-15" },
-                    { name: "Plantación inicial", completed: true, date: "2023-03-20" },
-                    { name: "Mantenimiento y seguimiento", completed: true, date: "2023-06-10" },
-                    { name: "Evaluación de impacto", completed: false, date: "2023-09-30" }
-                ],
-                location: [4.5709, -74.2973],
-                images: ["https://picsum.photos/seed/reforest1/800/400.jpg"]
-                description: "Plantación de 5,000 árboles nativos en zonas degradadas del Cauca."
-            },
-            {
-                id: "PROY-2023-002",
-                name: "Conservación de Manglares en la Costa Caribe",
-                organization: "Universidad del Caribe",
-                category: "conservacion",
-                region: "caribe",
-                id: 89,
-                title: "Educación Ambiental Escolar",
-                image: "https://via.placeholder.com/600x400?text=Educación+Ambiental",
-                applications: ["Educación", "Concienciación", "Formación juvenil"],
-                amount: "85,000,000",
-                progress: 100,
-                status: "verified",
-                totalAmount: 85000,
-                releasedAmount: 85000,
-                description: "Protección y restauración de 200 hectáreas de manglar en el departamento de Atlántico.",
-                milestones: [
-                    { name: "Diagnóstico inicial", completed: true, date: "2023-02-10" },
-                    { name: "Restauración de áreas críticas", completed: true, date: "2023-05-15" },
-                    { name: "Monitoreo de biodiversidad", completed: true, date: "2023-08-20" },
-                    { name: "Informe final", completed: true, date: "2023-10-05" }
-                ],
-                location: [10.9639, -74.7964],
-                images: ["https://picsum.photos/seed/mangle1/800/400.jpg"]
-            },
-            {
-                id: "PROY-2023-003",
-                name: "Energía Solar para Comunidades Rurales",
-                organization: "EcoEnergías S.A.",
-                category: "energia",
-                region: "pacifica",
-                status: "in-progress",
-                totalAmount: 150000,
-                releasedAmount: 50000,
-                description: "Instalación de paneles solares en 15 comunidades rurales del Chocó.",
-                milestones: [
-                    { name: "Estudio de viabilidad", completed: true, date: "2023-01-20" },
-                    { name: "Adquisición de equipos", completed: true, date: "2023-04-10" },
-                    { name: "Instalación inicial", completed: false, date: "2023-07-15" },
-                    { name: "Capacitación comunitaria", completed: false, date: "2023-09-30" }
-                ],
-                location: [5.4696, -76.5223],
-                images: ["https://picsum.photos/seed/solar1/800/400.jpg"]
-                description: "Talleres en 40 colegios de Medellín sobre reciclaje y sostenibilidad."
-            },
-            {
-                id: "PROY-2023-004",
-                name: "Monitoreo de Fauna en la Amazonía",
-                organization: "Instituto de Investigaciones Amazónicas",
-                category: "investigacion",
-                region: "amazonia",
-                status: "pending",
-                totalAmount: 120000,
-                releasedAmount: 0,
-                description: "Instalación de cámaras trampa y sensores para monitorear especies en riesgo.",
-                milestones: [
-                    { name: "Selección de sitios", completed: false, date: "2023-06-01" },
-                    { name: "Instalación de equipos", completed: false, date: "2023-08-15" },
-                    { name: "Recolección de datos", completed: false, date: "2023-11-20" },
-                    { name: "Análisis y publicación", completed: false, date: "2024-02-10" }
-                ],
-                location: [1.6143, -75.6064],
-                images: ["https://picsum.photos/seed/fauna1/800/400.jpg"]
-            },
-            {
-                id: "PROY-2023-005",
-                name: "Educación Ambiental en Escuelas Rurales",
-                organization: "ONG Verde Esperanza",
-                category: "educacion",
-                region: "orinoquia",
-                id: 201,
-                title: "Monitoreo de Biodiversidad",
-                image: "https://via.placeholder.com/600x400?text=Monitoreo+Biodiversidad",
-                applications: ["Investigación", "Conservación", "Tecnología"],
-                amount: "220,000,000",
-                progress: 45,
-                status: "in-progress",
-                totalAmount: 60000,
-                releasedAmount: 30000,
-                description: "Programa educativo sobre conservación y sostenibilidad en 20 escuelas rurales.",
-                milestones: [
-                    { name: "Desarrollo de materiales", completed: true, date: "2023-02-15" },
-                    { name: "Capacitación de docentes", completed: true, date: "2023-04-20" },
-                    { name: "Implementación en escuelas", completed: false, date: "2023-07-10" },
-                    { name: "Evaluación de impacto", completed: false, date: "2023-10-15" }
-                ],
-                location: [4.1157, -73.2599],
-                images: ["https://picsum.photos/seed/edu1/800/400.jpg"]
-            },
-            {
-                id: "PROY-2023-006",
-                name: "Restauración de Corales en el Caribe",
-                organization: "Fundación Mar Vivo",
-                category: "conservacion",
-                region: "caribe",
-                status: "verified",
-                totalAmount: 95000,
-                releasedAmount: 95000,
-                description: "Proyecto de restauración de arrecifes de coral en la isla de San Andrés.",
-                milestones: [
-                    { name: "Evaluación de sitios", completed: true, date: "2023-01-10" },
-                    { name: "Cultivo de corales", completed: true, date: "2023-04-25" },
-                    { name: "Trasplante en arrecifes", completed: true, date: "2023-07-15" },
-                    { name: "Monitoreo a largo plazo", completed: true, date: "2023-10-20" }
-                ],
-                location: [12.5847, -81.7006],
-                images: ["https://picsum.photos/seed/coral1/800/400.jpg"]
-                description: "Cámaras trampa y sensores IoT en Parque Nacional Natural."
-            }
-        ];
-
-        // Sample conversion data
-        const conversionData = [
-            { id: "TX0xAF3...", date: "2023-01-15", emitter: "Ministerio de Ambiente", amountCOP: 500000, amountCCOP: 500000, hash: "0x7f9a...3d2c", status: "completed" },
-            { id: "TX0xB5E...", date: "2023-02-20", emitter: "Gobernación de Antioquia", amountCOP: 300000, amountCCOP: 300000, hash: "0x2c8f...9a1b", status: "completed" },
-            { id: "TX0xC9D...", date: "2023-03-10", emitter: "Universidad Nacional", amountCOP: 200000, amountCCOP: 200000, hash: "0x5d3a...f7e9", status: "completed" },
-            { id: "TX0xE2F...", date: "2023-04-05", emitter: "Corporación Autónoma Regional", amountCOP: 150000, amountCCOP: 150000, hash: "0x8b2c...4d1e", status: "completed" },
-            { id: "TX0xF7A...", date: "2023-05-12", emitter: "Empresa Privada S.A.", amountCOP: 400000, amountCCOP: 400000, hash: "0x1e9f...7b3a", status: "in-progress" }
-        ];
-
-        // Sample verification data
-        const verificationData = [
-            { project: "PROY-2023-001", milestone: "Plantación inicial", verifier: "Auditor Ambiental S.A.", date: "2023-03-25", hash: "0xA1F93E...D12B", status: "verified" },
-            { project: "PROY-2023-002", milestone: "Restauración de áreas críticas", verifier: "Universidad del Caribe", date: "2023-05-20", hash: "0xB7E42A...F8C3", status: "verified" },
-            { project: "PROY-2023-003", milestone: "Estudio de viabilidad", verifier: "EcoEnergías S.A.", date: "2023-04-15", hash: "0xC9D73F...A2E1", status: "verified" },
-            { project: "PROY-2023-005", milestone: "Capacitación de docentes", verifier: "ONG Verde Esperanza", date: "2023-04-25", hash: "0xD5E81B...C7F4", status: "verified" },
-            { project: "PROY-2023-006", milestone: "Trasplante en arrecifes", verifier: "Fundación Mar Vivo", date: "2023-07-20", hash: "0xE3F92C...B5A8", status: "verified" }
-        ];
-
-        // Initialize map
-        let map;
-        function initMap() {
-            map = L.map('map').setView([4.5709, -74.2973], 5);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Add markers for projects
-            projects.forEach(project => {
-                const marker = L.marker(project.location).addTo(map);
-                marker.bindPopup(`
-                    <div class="popup-content">
-                        <h6>${project.name}</h6>
-                        <p>${project.organization}</p>
-                        <button class="btn btn-sm btn-primary" onclick="showProjectDetail('${project.id}')">Ver detalles</button>
-                    </div>
-                `);
-            });
-        }
-
-        // Load projects
-        function loadProjects(projectsToShow = projects) {
-            const container = document.getElementById('projectsContainer');
-            container.innerHTML = '';
-
-            projectsToShow.forEach(project => {
-                const progressPercentage = (project.releasedAmount / project.totalAmount) * 100;
-                const statusClass = getStatusClass(project.status);
-                const statusText = getStatusText(project.status);
-
-                const projectCard = document.createElement('div');
-                projectCard.className = 'col-lg-4 col-md-6';
-                projectCard.innerHTML = `
-                    <div class="project-card">
-                        <div class="project-header">
-                            <h5>${project.name}</h5>
-                            <span class="badge bg-light text-dark">${project.id}</span>
-                        </div>
-                        <div class="project-body">
-                            <p class="text-muted">${project.organization}</p>
-                            <p>${project.description}</p>
-                            
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Fondos liberados:</span>
-                                <span class="fw-bold">$${project.releasedAmount.toLocaleString()} / $${project.totalAmount.toLocaleString()}</span>
-                            </div>
-                            
-                            <div class="progress-container">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: ${progressPercentage}%">${progressPercentage.toFixed(0)}%</div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-3">
-                                <span class="badge ${statusClass}">${statusText}</span>
-                            </div>
-                            
-                            <div class="mt-3">
-                                <button class="btn btn-sm btn-outline-primary" onclick="showProjectDetail('${project.id}')">
-                                    <i class="bi bi-eye me-1"></i>Ver Detalles
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="viewOnBlockchain('${project.id}')">
-                                    <i class="bi bi-box-arrow-up-right me-1"></i>Blockchain
-                                </button>
-                            </div>
-                        </div>
-        // --- UI Y UTILIDADES ---
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            alertDiv.innerHTML = `${message} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-            alertContainer.appendChild(alertDiv);
-            setTimeout(() => { alertDiv.remove(); }, 5000);
-        }
-
-        function updateWalletUI(isConnected) {
-            const walletArea = document.getElementById('walletConnectionArea');
-            if (isConnected && userAddress) {
-                const shortAddress = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
-                walletArea.innerHTML = `
-                    <div class="wallet-info">
-                        <span class="network-badge">Celo</span>
-                        <span>${shortAddress}</span>
-                        <button class="btn btn-outline-light btn-sm" onclick="disconnectWallet()">Desconectar</button>
-                    </div>
-                `;
-                container.appendChild(projectCard);
-            });
-        }
-
-        // Get status class
-        function getStatusClass(status) {
-            switch (status) {
-                case 'pending': return 'badge-status status-pending';
-                case 'in-progress': return 'badge-status status-in-progress';
-                case 'verified': return 'badge-status status-verified';
-                case 'closed': return 'badge-status status-closed';
-                default: return 'badge-status status-pending';
-            }
-        }
-
-        // Get status text
-        function getStatusText(status) {
-            switch (status) {
-                case 'pending': return 'Pendiente';
-                case 'in-progress': return 'En Ejecución';
-                case 'verified': return 'Verificado';
-                case 'closed': return 'Cerrado';
-                default: return 'Desconocido';
-            }
-        }
-
-        // Show project detail
-        function showProjectDetail(projectId) {
-            const project = projects.find(p => p.id === projectId);
-            if (!project) return;
-
-            const modal = new bootstrap.Modal(document.getElementById('projectDetailModal'));
-            document.getElementById('projectDetailTitle').textContent = project.name;
-            
-            let milestonesHtml = '';
-            project.milestones.forEach((milestone, index) => {
-                const completedClass = milestone.completed ? 'completed' : '';
-                const completedIcon = milestone.completed ? 'bi-check-circle-fill' : 'bi-circle';
-                const completedText = milestone.completed ? 'Completado' : 'Pendiente';
-                
-                milestonesHtml += `
-                    <div class="milestone">
-                        <div class="milestone-icon ${completedClass}">
-                            <i class="bi ${completedIcon}"></i>
-                        </div>
-                        <div class="milestone-content">
-                            <h6>${milestone.name}</h6>
-                            <small class="text-muted">Fecha: ${milestone.date} | Estado: ${completedText}</small>
-                        </div>
-                    </div>
-            } else {
-                walletArea.innerHTML = `
-                    <button class="btn btn-outline-light" id="connectWalletBtn" onclick="connectWallet()">
-                        <i class="bi bi-wallet2 me-2"></i>Conectar Billetera
-                    </button>
-                `;
-            });
-
-            document.getElementById('projectDetailBody').innerHTML = `
-                <div class="row">
-                    <div class="col-md-8">
-                        <p><strong>ID del Proyecto:</strong> ${project.id}</p>
-                        <p><strong>Organización:</strong> ${project.organization}</p>
-                        <p><strong>Descripción:</strong> ${project.description}</p>
-                        
-                        <h6 class="mt-4">Hitos del Proyecto</h6>
-                        ${milestonesHtml}
-                    </div>
-                    <div class="col-md-4">
-                        <img src="${project.images[0]}" class="img-fluid rounded mb-3" alt="${project.name}">
-                        
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title">Información Financiera</h6>
-                                <p><strong>Monto Total:</strong> $${project.totalAmount.toLocaleString()} CCOP</p>
-                                <p><strong>Monto Liberado:</strong> $${project.releasedAmount.toLocaleString()} CCOP</p>
-                                <p><strong>Porcentaje:</strong> ${((project.releasedAmount / project.totalAmount) * 100).toFixed(0)}%</p>
-                                
-                                <div class="progress mt-3">
-                                    <div class="progress-bar" role="progressbar" style="width: ${(project.releasedAmount / project.totalAmount) * 100}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            modal.show();
-        }
-
-        // View on blockchain
-        function viewOnBlockchain(projectId) {
-            // In a real implementation, this would open a blockchain explorer with the project details
-            alert(`En una implementación real, esto abriría el explorador de bloques para ver el proyecto ${projectId} en la blockchain de CELO L2.`);
-        }
-
-        // Apply filters
-        function applyFilters() {
-            const region = document.getElementById('regionFilter').value;
-            const category = document.getElementById('categoryFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
-            let filteredProjects = projects;
-
-            if (region) {
-                filteredProjects = filteredProjects.filter(p => p.region === region);
-            }
-        }
-
-            if (category) {
-                filteredProjects = filteredProjects.filter(p => p.category === category);
-        // --- CONEXIÓN A BLOCKCHAIN ---
-        async function connectWallet() {
-            if (typeof window.ethereum === 'undefined') {
-                showAlert('MetaMask no está instalado.', 'danger');
-                return;
-            }
-
-            if (status) {
-                filteredProjects = filteredProjects.filter(p => p.status === status);
-            const btn = document.getElementById('connectWalletBtn');
-            if (btn) { btn.innerHTML = '<span class="loading-spinner"></span> Conectando...'; btn.disabled = true; }
-
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                if (accounts.length === 0) throw new Error("Conexión rechazada.");
-
-                userAddress = accounts[0];
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                await checkAndSwitchNetwork();
-                updateWalletUI(true);
-                showAlert('Billetera conectada.', 'success');
-                loadProjects(); // Carga proyectos (mock por ahora)
-            } catch (error) {
-                showAlert(error.message || 'Error al conectar.', 'danger');
-                updateWalletUI(false);
-            }
-
-            if (searchTerm) {
-                filteredProjects = filteredProjects.filter(p => 
-                    p.name.toLowerCase().includes(searchTerm) || 
-                    p.organization.toLowerCase().includes(searchTerm) ||
-                    p.description.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            loadProjects(filteredProjects);
-        }
-
-        // Reset filters
-        function resetFilters() {
-            document.getElementById('regionFilter').value = '';
-            document.getElementById('categoryFilter').value = '';
-            document.getElementById('statusFilter').value = '';
-            document.getElementById('searchInput').value = '';
-            loadProjects();
-        }
-
-        // Load more projects
-        function loadMoreProjects() {
-            // In a real implementation, this would load more projects from the server
-            alert("En una implementación real, esto cargaría más proyectos desde el servidor.");
-        }
-
-        // Load conversion table
-        function loadConversionTable() {
-            const tableBody = document.getElementById('conversionTableBody');
-            tableBody.innerHTML = '';
-
-            conversionData.forEach(transaction => {
-                const statusClass = transaction.status === 'completed' ? 'text-success' : 'text-warning';
-                const statusText = transaction.status === 'completed' ? 'Completado' : 'En Proceso';
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${transaction.id}</td>
-                    <td>${transaction.date}</td>
-                    <td>${transaction.emitter}</td>
-                    <td>$${transaction.amountCOP.toLocaleString()}</td>
-                    <td>${transaction.amountCCOP.toLocaleString()} CCOP</td>
-                    <td><code>${transaction.hash}</code></td>
-                    <td><span class="${statusClass}">${statusText}</span></td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        // Load distribution chart
-        function loadDistributionChart() {
-            const ctx = document.getElementById('distributionChart').getContext('2d');
-            
-            const categoryData = {};
-            projects.forEach(project => {
-                if (!categoryData[project.category]) {
-                    categoryData[project.category] = 0;
-                }
-                categoryData[project.category] += project.totalAmount;
-            });
-
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(categoryData).map(cat => getCategoryName(cat)),
-                    datasets: [{
-                        data: Object.values(categoryData),
-                        backgroundColor: [
-                            '#2E7D32',
-                            '#81C784',
-                            '#FFC107',
-                            '#64B5F6',
-                            '#BA68C8'
-                        ],
-                        borderWidth: 1
-                    }]
+                id: 'LIC-001', title: "Restauración de Corales en San Andrés", image: "https://picsum.photos/seed/coral_san_andres/800/400.jpg",
+                description: "Restauración de 10 hectáreas de arrecifes de coral dañados mediante micro-fragmentación. Incluye capacitación a pescadores locales.",
+                capital: 450000000, location: [12.5847, -81.7006],
+                requisitos: {
+                    tecnicos: ["Experiencia demostrada en restauración de arrecifes.", "Capacidad para operar en zonas marinas protegidas."],
+                    financieros: ["Capacidad de inversión mínima de $50M COP.", "Presentación de garantías de cumplimiento."],
+                    legales: ["Inscripción en Cámara de Comercio.", "Certificado de antecedentes judiciales de los representantes legales."]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Distribución de Fondos por Categoría'
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-        async function checkAndSwitchNetwork() {
-            const network = await provider.getNetwork();
-            if (network.chainId !== CELO_CHAIN_ID) {
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: CELO_CHAIN_ID_HEX }],
-                    });
-                } catch (error) {
-                    if (error.code === 4902) {
-                        await window.ethereum.request({
-                            method: 'wallet_addEthereumChain',
-                            params: [{
-                                chainId: CELO_CHAIN_ID_HEX,
-                                chainName: 'Celo Mainnet',
-                                rpcUrls: [CELO_MAINNET_RPC_URL],
-                                nativeCurrency: { name: 'CELO', symbol: 'CELO', decimals: 18 },
-                                blockExplorerUrls: ['https://celoscan.io/'],
-                            }],
-                        });
-                    }
-                }
-            });
-
-            // Load distribution details
-            const detailsContainer = document.getElementById('distributionDetails');
-            let detailsHtml = '<h5>Detalles por Proyecto</h5>';
-            
-            projects.forEach(project => {
-                const progressPercentage = (project.releasedAmount / project.totalAmount) * 100;
-                detailsHtml += `
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>${project.name}</span>
-                            <span>$${project.releasedAmount.toLocaleString()} / $${project.totalAmount.toLocaleString()}</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: ${progressPercentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            detailsContainer.innerHTML = detailsHtml;
+                plano: { image: "https://picsum.photos/seed/coral_blueprint/1200/800.jpg", description: "Plano maestro de las zonas de intervención, mostrando los sitios de siembra, los nurseries y las áreas de monitoreo." }
+            },
+            {
+                id: 'LIC-002', title: "Corredor Ecológico Oso de Anteojos", image: "https://picsum.photos/seed/oso_corredor/800/400.jpg",
+                description: "Creación de un corredor biológico de 5,000 hectáreas para conectar poblaciones de oso de anteojos en la cordillera occidental.",
+                capital: 620000000, location: [3.8893, -77.0764],
+                requisitos: {
+                    tecnicos: ["Experiencia en biología de la conservación y manejo de vida silvestre.", "Capacidad para realizar estudios de conectividad ecológica."],
+                    financieros: ["Capacidad de inversión mínima de $75M COP.", "Presentación de un plan financiero a 5 años."],
+                    legales: ["Acuerdos con propietarios de tierras.", "Permisos ambientales de la autoridad competente."]
+                },
+                plano: { image: "https://picsum.photos/seed/corridor_blueprint/1200/800.jpg", description: "Mapa del corredor ecológico propuesto, detallando las áreas a reforestar, los pasos de fauna y las zonas núcleo de hábitat." }
+            },
+            {
+                id: 'LIC-003', title: "Filtro de Agua con Moringa para La Guajira", image: "https://picsum.photos/seed/moringa_guajira/800/400.jpg",
+                description: "Implementación de 1,000 sistemas de filtración de agua con Moringa oleifera para comunidades wayúu en la Alta Guajira.",
+                capital: 280000000, location: [11.9663, -72.3069],
+                requisitos: {
+                    tecnicos: ["Experiencia en tecnologías de tratamiento de agua de bajo costo.", "Capacidad para trabajar con comunidades indígenas."],
+                    financieros: ["Capacidad de inversión mínima de $30M COP.", "Co-financiación del 20% por parte de la comunidad."],
+                    legales: ["Consulta previa y consentimiento de las comunidades.", "Registro del proyecto ante la autoridad ambiental regional."]
+                },
+                plano: { image: "https://picsum.photos/seed/guajira_blueprint/1200/800.jpg", description: "Distribución geográfica de los sistemas de filtración en las comunidades seleccionadas, mostrando los puntos de agua y las viviendas beneficiadas." }
+            },
+            {
+                id: 'LIC-004', title: "Laboratorio de Plásticos Biodegradables", image: "https://picsum.photos/seed/bioplastic_lab/800/400.jpg",
+                description: "Establecimiento de un laboratorio en Cali para investigar y producir plásticos biodegradables a partir de residuos agrícolas.",
+                capital: 750000000, location: [3.4516, -76.5319],
+                requisitos: {
+                    tecnicos: ["Equipo de investigación con doctorado en química de polímeros o biotecnología.", "Acceso a laboratorios de última generación."],
+                    financieros: ["Capacidad de inversión mínima de $100M COP.", "Plan de sostenibilidad y escalabilidad a 3 años."],
+                    legales: ["Propiedad intelectual sobre las tecnologías a desarrollar.", "Alianzas estratégicas con universidades o centros de investigación."]
+                },
+                plano: { image: "https://picsum.photos/seed/lab_blueprint/1200/800.jpg", description: "Diseño arquitectónico y de layout del laboratorio, incluyendo las áreas de investigación, producción y bodegas de materias primas." }
             }
-        }
+        ];
 
-        // Get category name
-        function getCategoryName(category) {
-            switch (category) {
-                case 'reforestacion': return 'Reforestación';
-                case 'conservacion': return 'Conservación';
-                case 'investigacion': return 'Investigación';
-                case 'educacion': return 'Educación Ambiental';
-                case 'energia': return 'Energías Renovables';
-                default: return category;
-            }
-        function disconnectWallet() {
-            userAddress = null; provider = null; signer = null; contract = null;
-            updateWalletUI(false);
-            showAlert('Billetera desconectada.', 'info');
-            document.getElementById('projectsContainer').innerHTML = `
-                <div class="col-12 text-center connection-status">
-                    <i class="bi bi-wallet2" style="font-size: 3rem; color: #ccc;"></i>
-                    <p class="mt-3">Conecta tu billetera para ver los proyectos.</p>
-                </div>
+        const mockActiveProjects = [
+            { id: 1, title: "Reforestación del Alto Magdalena", image: "https://picsum.photos/seed/reforest1/800/400.jpg", applications: ["Reforestación", "Captura de carbono"], amount: "250,000,000", progress: 78, status: "in-progress", description: "Proyecto de reforestación de 500 hectáreas en la cuenca alta del río Magdalena.", location: [4.5709, -74.2973] },
+            { id: 2, title: "Conservación de Manglares Caribe", image: "https://picsum.photos/seed/mangle1/800/400.jpg", applications: ["Conservación", "Biodiversidad"], amount: "180,000,000", progress: 100, status: "verified", description: "Protección y restauración de 200 hectáreas de manglar en el departamento de Atlántico.", location: [10.9639, -74.7964] },
+            { id: 3, title: "Energía Solar para Chocó", image: "https://picsum.photos/seed/solar1/800/400.jpg", applications: ["Energías Renovables"], amount: "300,000,000", progress: 45, status: "in-progress", description: "Instalación de paneles solares en 15 comunidades rurales del Chocó.", location: [5.4696, -76.5223] }
+        ];
+
+        // --- UI Y UTILIDADES ---
+        function showAlert(message, type = 'info') { /* ... sin cambios ... */ const alertContainer = document.getElementById('alertContainer'); const alertDiv = document.createElement('div'); alertDiv.className = `alert alert-${type} alert-dismissible fade show`; alertDiv.innerHTML = `${message} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`; alertContainer.appendChild(alertDiv); setTimeout(() => { alertDiv.remove(); }, 5000); }
+        function updateWalletUI(isConnected) { /* ... sin cambios ... */ const walletArea = document.getElementById('walletConnectionArea'); if (isConnected && userAddress) { const shortAddress = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`; walletArea.innerHTML = `<div class="d-flex align-items-center gap-2"><span class="badge bg-success">Celo</span><span>${shortAddress}</span><button class="btn btn-outline-light btn-sm" onclick="disconnectWallet()">Desconectar</button></div>`; } else { walletArea.innerHTML = `<button class="btn btn-outline-light" id="connectWalletBtn" onclick="connectWallet()"><i class="bi bi-wallet2 me-2"></i>Conectar Billetera</button>`; } }
+        
+        // --- CONEXIÓN A BLOCKCHAIN ---
+        async function connectWallet() { /* ... sin cambios ... */ if (typeof window.ethereum === 'undefined') { showAlert('MetaMask no está instalado.', 'danger'); return; } const btn = document.getElementById('connectWalletBtn'); if (btn) { btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Conectando...'; btn.disabled = true; } try { await window.ethereum.request({ method: 'eth_requestAccounts' }); provider = new ethers.providers.Web3Provider(window.ethereum); signer = provider.getSigner(); userAddress = await signer.getAddress(); await checkAndSwitchNetwork(); updateWalletUI(true); showAlert('Billetera conectada.', 'success'); } catch (error) { showAlert('Error al conectar.', 'danger'); updateWalletUI(false); } }
+        async function checkAndSwitchNetwork() { /* ... sin cambios ... */ const network = await provider.getNetwork(); if (network.chainId !== CELO_CHAIN_ID) { showAlert('Cambiando a Celo Mainnet...', 'warning'); try { await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CELO_CHAIN_ID_HEX }] }); } catch (error) { if (error.code === 4902) { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CELO_CHAIN_ID_HEX, chainName: 'Celo Mainnet', rpcUrls: [CELO_MAINNET_RPC_URL], nativeCurrency: { name: 'CELO', symbol: 'CELO', decimals: 18 }, blockExplorerUrls: ['https://celoscan.io/'] }] }); } } } }
+        function disconnectWallet() { userAddress = null; provider = null; signer = null; updateWalletUI(false); showAlert('Billetera desconectada.', 'info'); }
+
+        // --- MODAL FUNCTIONS ---
+        function showRequisitosModal(projectId) {
+            const project = mockLicitacionProjects.find(p => p.id === projectId);
+            if (!project) return;
+            document.getElementById('requisitosModalTitle').innerText = `Requisitos - ${project.title}`;
+            document.getElementById('requisitosModalBody').innerHTML = `
+                <h6>Requisitos Técnicos</h6><ul>${project.requisitos.tecnicos.map(req => `<li>${req}</li>`).join('')}</ul>
+                <h6>Requisitos Financieros</h6><ul>${project.requisitos.financieros.map(req => `<li>${req}</li>`).join('')}</ul>
+                <h6>Requisitos Legales</h6><ul>${project.requisitos.legales.map(req => `<li>${req}</li>`).join('')}</ul>
             `;
+            new bootstrap.Modal(document.getElementById('requisitosModal')).show();
         }
 
-        // Load verification timeline
-        function loadVerificationTimeline() {
-            const timeline = document.getElementById('verificationTimeline');
-            timeline.innerHTML = '';
-        // --- CARGAR PROYECTOS ---
-        function loadProjects() {
-            const container = document.getElementById('projectsContainer');
-            container.innerHTML = '';
+        function showPlanosModal(projectId) {
+            const project = mockLicitacionProjects.find(p => p.id === projectId);
+            if (!project) return;
+            document.getElementById('planosModalTitle').innerText = `Planos - ${project.title}`;
+            document.getElementById('planosModalBody').innerHTML = `
+                <img src="${project.plano.image}" class="img-fluid rounded mb-3" alt="Plano del proyecto">
+                <p>${project.plano.description}</p>
+            `;
+            new bootstrap.Modal(document.getElementById('planosModal')).show();
+        }
 
-            verificationData.forEach((item, index) => {
-                const timelineItem = document.createElement('div');
-                timelineItem.className = 'transaction-item';
-                timelineItem.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6>${item.project} - ${item.milestone}</h6>
-                            <p class="mb-1">Verificado por: ${item.verifier}</p>
-                            <p class="mb-1">Fecha: ${item.date}</p>
-                            <p class="mb-0">Hash: <code>${item.hash}</code></p>
-                        </div>
-                        <div>
-                            <span class="badge bg-success">Verificado</span>
-            mockProjects.forEach(project => {
+        // --- CARGAR PROYECTOS ---
+        function loadLicitacionProjects() {
+            const container = document.getElementById('licitacionContainer');
+            container.innerHTML = '';
+            mockLicitacionProjects.forEach(project => {
                 const card = document.createElement('div');
                 card.className = 'col-md-6 col-lg-4';
                 card.innerHTML = `
-                    <div class="project-card">
-                        <img src="${project.image}" class="project-img" alt="${project.title}">
-                        <div class="project-header">${project.title}</div>
-                        <div class="project-body">
-                            <p class="mb-2">${project.description}</p>
-                            <div class="project-tags">
-                                ${project.applications.map(app => `<span class="tag">${app}</span>`).join('')}
+                    <div class="licitacion-card h-100">
+                        <img src="${project.image}" class="licitacion-img" alt="${project.title}">
+                        <div class="licitacion-header">ID: ${project.id}</div>
+                        <div class="card-body">
+                            <h5>${project.title}</h5>
+                            <p>${project.description}</p>
+                            <h6 class="mt-3">Monto Estimado:</h6>
+                            <p class="amount-highlight">$ ${project.capital.toLocaleString('es-CO')} COP</p>
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn btn-outline-primary" onclick="showRequisitosModal('${project.id}')"><i class="bi bi-clipboard-check me-2"></i>Ver Requisitos</button>
+                                <button class="btn btn-primary" onclick="showPlanosModal('${project.id}')"><i class="bi bi-map me-2"></i>Ver Planos</button>
                             </div>
-                            <div class="amount-highlight mt-3">$ ${parseInt(project.amount).toLocaleString()} COP</div>
-                            <div class="progress-container">
-                                <div class="progress">
-                                    <div class="progress-bar" style="width: ${project.progress}%"></div>
-                                </div>
-                                <small class="text-muted">${project.progress}% completado</small>
-                            </div>
-                            <span class="badge-status status-${project.status}">
-                                ${project.status === 'in-progress' ? 'En progreso' : project.status === 'verified' ? 'Verificado' : 'Pendiente'}
-                            </span>
                         </div>
                     </div>
                 `;
-                timeline.appendChild(timelineItem);
                 container.appendChild(card);
             });
         }
+        
+        function loadActiveProjects() { /* ... sin cambios ... */ const container = document.getElementById('projectsContainer'); container.innerHTML = ''; mockActiveProjects.forEach(project => { const statusText = { 'in-progress': 'En Ejecución', 'verified': 'Verificado' }[project.status] || 'Pendiente'; const card = document.createElement('div'); card.className = 'col-md-6 col-lg-4'; card.innerHTML = `<div class="project-card h-100"><img src="${project.image}" class="project-img" alt="${project.title}"><div class="project-header">${project.title}</div><div class="card-body"><p class="mb-2">${project.description}</p><div class="project-tags mb-3">${project.applications.map(app => `<span class="tag">${app}</span>`).join('')}</div><div class="amount-highlight">$ ${parseInt(project.amount).toLocaleString('es-CO')} COP</div><div class="progress-container my-3"><div class="progress"><div class="progress-bar" style="width: ${project.progress}%"></div></div><small class="text-muted">${project.progress}% completado</small></div><span class="badge-status status-${project.status}">${statusText}</span></div></div>`; container.appendChild(card); }); }
 
-        // Show how it works modal
-        function showHowItWorks() {
-            const modal = new bootstrap.Modal(document.getElementById('howItWorksModal'));
-            modal.show();
-        }
-        // --- HANDLER PARA FORMULARIO DE CONTACTO ---
+        // --- HANDLERS Y EVENTOS ---
         document.addEventListener('DOMContentLoaded', function() {
-            const contactForm = document.getElementById('contactForm');
-            if (contactForm) {
-                contactForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    showAlert('Mensaje enviado con éxito. ¡Gracias por contactarnos!', 'success');
-                    contactForm.reset();
-                });
-            }
-        });
+            // Initialize map
+            const map = L.map('map').setView([4.5709, -74.2973], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+            
+            const allProjects = [...mockLicitacionProjects, ...mockActiveProjects];
+            allProjects.forEach(project => {
+                const popupContent = `<img src="${project.image}" style="width:200px; height:100px; object-fit:cover; border-radius:5px;"><h6>${project.title}</h6><p>${project.description.substring(0, 100)}...</p><a href="#" class="btn btn-sm btn-primary" onclick="scrollToSection('${project.id.startsWith('LIC') ? 'licitacion' : 'proyectos'}')">Ver más</a>`;
+                L.marker(project.location).addTo(map).bindPopup(popupContent);
+            });
 
-        // Scroll to section
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
-        }
-        // --- MODALES ---
-        function showHowItWorks() { new bootstrap.Modal(document.getElementById('howItWorksModal')).show(); }
-        function openTraceModal() { new bootstrap.Modal(document.getElementById('traceModal')).show(); }
-        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
-
-        // Initialize page
-        // --- INICIALIZACIÓN ---
-        document.addEventListener('DOMContentLoaded', function() {
-            initMap();
-            loadProjects();
-            loadConversionTable();
-            loadDistributionChart();
-            loadVerificationTimeline();
+            // Initial load
+            loadLicitacionProjects();
+            loadActiveProjects();
             updateWalletUI(false);
+
+            // Contact form handler
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) { contactForm.addEventListener('submit', function(e) { e.preventDefault(); showAlert('Mensaje enviado con éxito. ¡Gracias por contactarnos!', 'success'); contactForm.reset(); }); }
+
             if (window.ethereum) {
-                window.ethereum.on('accountsChanged', (accounts) => {
-                    if (accounts.length === 0) disconnectWallet();
-                    else window.location.reload();
-                });
+                window.ethereum.on('accountsChanged', (accounts) => { if (accounts.length === 0) disconnectWallet(); else window.location.reload(); });
+                window.ethereum.on('chainChanged', () => window.location.reload());
             }
         });
+
+        // --- FUNCIONES GLOBALES ---
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
     </script>
 </body>
+</html>
