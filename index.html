@@ -52,92 +52,65 @@
             margin-bottom: 15px;
         }
         .project-card {
-            border-radius: 15px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
         }
         .project-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
-        }
-        .project-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
+            transform: translateY(-5px);
         }
         .project-header {
             background-color: var(--primary-color);
             color: white;
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding: 15px;
         }
         .project-body {
             padding: 20px;
         }
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 12px 0;
-        }
-        .tag {
-            background-color: var(--light-bg);
-            color: var(--dark-color);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .amount-highlight {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
         .progress-container {
-            margin: 15px 0;
+            margin: 20px 0;
         }
         .progress {
-            height: 10px;
-            border-radius: 5px;
+            height: 25px;
+            border-radius: 15px;
             background-color: #e9ecef;
         }
         .progress-bar {
             background-color: var(--secondary-color);
-            border-radius: 5px;
+            border-radius: 15px;
+            font-weight: bold;
         }
         .milestone {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
+            margin-bottom: 15px;
         }
         .milestone-icon {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background-color: var(--secondary-color);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
+            margin-right: 15px;
             flex-shrink: 0;
-            font-size: 0.8rem;
         }
         .milestone-icon.completed {
             background-color: var(--accent-color);
+        }
+        .milestone-content {
+            flex-grow: 1;
         }
         .transaction-item {
             padding: 10px;
             border-left: 3px solid var(--secondary-color);
             margin-bottom: 10px;
-            background-color: #f8f9fa;
+            background-color: white;
             border-radius: 0 5px 5px 0;
-            font-size: 0.9rem;
         }
         .filter-section {
             background-color: white;
@@ -185,53 +158,52 @@
         .status-in-progress { background-color: #E3F2FD; color: #0D47A1; }
         .status-verified { background-color: #E8F5E9; color: #1B5E20; }
         .status-closed { background-color: #F3E5F5; color: #4A148C; }
-        .detail-modal .modal-header { background-color: var(--primary-color); color: white; }
-       
-        .fund-flow { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin: 20px 0; 
-            position: relative; 
-        }
-        .fund-flow::before { 
-            content: ''; 
-            position: absolute; 
-            top: 50%; 
-            left: 0; 
-            right: 0; 
-            height: 3px; 
-            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color)); 
-            z-index: 1; 
-        }
-        .fund-step { 
-            background-color: white; 
-            border: 3px solid var(--primary-color); 
-            border-radius: 50%; 
-            width: 60px; 
-            height: 60px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 2; 
-            position: relative; 
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
-        .fund-step.active { 
-            background-color: var(--primary-color); 
-            color: white; 
-        }
-        .fund-step-label { 
-            position: absolute; 
-            bottom: -30px; 
-            white-space: nowrap; 
-            font-size: 0.85rem; 
-            width: 120px; 
-            text-align: center; 
+        .detail-modal .modal-header {
+            background-color: var(--primary-color);
             color: white;
-            font-weight: 500;
         }
+        .fund-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .fund-flow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        .fund-step {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            position: relative;
+        }
+        .fund-step.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .fund-step-label {
+            position: absolute;
+            bottom: -25px;
+            white-space: nowrap;
+            font-size: 0.8rem;
+            width: 100px;
+            text-align: center;
+        }
+        /* ESTILOS PARA BILLETERA Y CONEXIÓN */
         .wallet-info {
             color: white;
             display: flex;
@@ -255,7 +227,9 @@
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
         .alert-container {
             position: fixed;
             top: 80px;
@@ -267,50 +241,10 @@
             font-size: 0.9rem;
             color: #ccc;
         }
-        .trace-step {
-            position: relative;
-            padding-left: 40px;
-            margin-bottom: 20px;
-        }
-        .trace-step::before {
-            content: '';
-            position: absolute;
-            left: 15px;
-            top: 30px;
-            bottom: -20px;
-            width: 2px;
-            background-color: var(--secondary-color);
-        }
-        .trace-step:last-child::before {
-            display: none;
-        }
-        .trace-icon {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-        }
-        .about-section, .contact-section {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-        }
-        .contact-form .form-control {
-            margin-bottom: 15px;
-        }
     </style>
 </head>
 <body>
+
     <!-- Alert Container -->
     <div class="alert-container" id="alertContainer"></div>
 
@@ -324,13 +258,21 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="nav-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#inicio">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#proyectos">Proyectos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#trazabilidad">Trazabilidad</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#quienes-somos">Quienes Somos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contactanos">Contáctanos</a></li>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#proyectos">Proyectos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trazabilidad">Trazabilidad</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#nosotros">Nosotros</a>
+                    </li>
                     <li class="nav-item d-flex align-items-center ms-3">
+                        <!-- El botón de conexión se manejará con JavaScript -->
                         <div id="walletConnectionArea"></div>
                     </li>
                 </ul>
@@ -361,7 +303,7 @@
                             <span class="fund-step-label">Fondos COP</span>
                         </div>
                         <div class="fund-step active">
-                            <i class="bi bi-currency-exchange"></i>
+                            <i class="bi bi-currency-bitcoin"></i>
                             <span class="fund-step-label">Conversión CCOP</span>
                         </div>
                         <div class="fund-step active">
@@ -384,28 +326,28 @@
             <div class="col-md-3 col-sm-6">
                 <div class="stats-card text-center">
                     <div class="card-icon"><i class="bi bi-currency-exchange"></i></div>
-                    <h3 class="fw-bold" id="totalFunds">$3.2B</h3>
+                    <h3 class="fw-bold" id="totalFunds">$2.5B</h3>
                     <p class="text-muted">Recursos Totales</p>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
                 <div class="stats-card text-center">
                     <div class="card-icon"><i class="bi bi-diagram-3"></i></div>
-                    <h3 class="fw-bold" id="activeProjects">5</h3>
+                    <h3 class="fw-bold" id="activeProjects">142</h3>
                     <p class="text-muted">Proyectos Activos</p>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
                 <div class="stats-card text-center">
                     <div class="card-icon"><i class="bi bi-people"></i></div>
-                    <h3 class="fw-bold">15</h3>
+                    <h3 class="fw-bold">28</h3>
                     <p class="text-muted">Organizaciones</p>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
                 <div class="stats-card text-center">
                     <div class="card-icon"><i class="bi bi-check-circle"></i></div>
-                    <h3 class="fw-bold">95%</h3>
+                    <h3 class="fw-bold">89%</h3>
                     <p class="text-muted">Trazabilidad Completa</p>
                 </div>
             </div>
@@ -416,14 +358,23 @@
     <section class="container mb-5" id="proyectos">
         <h2 class="mb-4">Explorar Proyectos</h2>
         <div class="row" id="projectsContainer">
-            <!-- Proyectos se cargarán aquí dinámicamente -->
+            <div class="col-12 text-center connection-status">
+                <i class="bi bi-wallet2" style="font-size: 3rem; color: #ccc;"></i>
+                <p class="mt-3">Por favor, conecta tu billetera MetaMask para ver los proyectos desde la blockchain.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Trazabilidad Section -->
-    <section class="container mb-5" id="trazabilidad">
-        <h2 class="mb-4">Trazabilidad de Recursos</h2>
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <div class="card border-0 shadow">
-                    <div class="card-body p
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5 class="mb-3">Trazabilidad Ambiental CCOP</h5>
+                    <p>Plataforma blockchain para la gestión transparente de recursos ambientales en Colombia.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-3">Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Acerca de</a></li>
+                        <li><a href="#" class="text-white-50">Documentación técnica
