@@ -7,374 +7,184 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
     <style>
+        /* Estilos base */
         :root {
             --primary-color: #2E7D32;
             --secondary-color: #81C784;
             --accent-color: #FFC107;
             --dark-color: #1B5E20;
-            --light-bg: #F1F8E9;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-        }
-        .navbar {
-            background-color: var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .navbar-brand {
-            font-weight: bold;
-            color: white !important;
-        }
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 60px 0;
-            margin-bottom: 30px;
-        }
-        .stats-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-        }
-        .stats-card:hover {
-            transform: translateY(-5px);
-        }
-        .stats-card .card-icon {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-        .project-card {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-        }
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-        .project-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px;
-        }
-        .project-body {
-            padding: 20px;
-        }
-        .progress-container {
-            margin: 20px 0;
-        }
-        .progress {
-            height: 25px;
-            border-radius: 15px;
-            background-color: #e9ecef;
-        }
-        .progress-bar {
-            background-color: var(--secondary-color);
-            border-radius: 15px;
-            font-weight: bold;
-        }
-        .milestone {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .milestone-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--secondary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-        .milestone-icon.completed {
-            background-color: var(--accent-color);
-        }
-        .milestone-content {
-            flex-grow: 1;
-        }
-        .transaction-item {
-            padding: 10px;
-            border-left: 3px solid var(--secondary-color);
-            margin-bottom: 10px;
-            background-color: white;
-            border-radius: 0 5px 5px 0;
-        }
-        .filter-section {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        #map {
-            height: 400px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        .tab-content {
-            padding: 20px;
-            background-color: white;
-            border-radius: 0 0 10px 10px;
-        }
-        .nav-tabs {
-            border-bottom: 2px solid var(--secondary-color);
-        }
-        .nav-tabs .nav-link {
-            color: var(--primary-color);
-            font-weight: 500;
-            border: none;
-            border-bottom: 3px solid transparent;
-        }
-        .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            background-color: transparent;
-            border-bottom: 3px solid var(--primary-color);
-        }
-        .footer {
-            background-color: var(--dark-color);
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-        }
-        .badge-status {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-        .status-pending { background-color: #FFF3E0; color: #E65100; }
-        .status-in-progress { background-color: #E3F2FD; color: #0D47A1; }
-        .status-verified { background-color: #E8F5E9; color: #1B5E20; }
-        .status-closed { background-color: #F3E5F5; color: #4A148C; }
-        .detail-modal .modal-header {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .fund-flow {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-            position: relative;
-        }
-        .fund-flow::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: #e0e0e0;
-            z-index: 1;
-        }
-        .fund-step {
-            background-color: white;
-            border: 2px solid var(--primary-color);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            position: relative;
-        }
-        .fund-step.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .fund-step-label {
-            position: absolute;
-            bottom: -25px;
-            white-space: nowrap;
-            font-size: 0.8rem;
-            width: 100px;
-            text-align: center;
-        }
-        /* ESTILOS PARA BILLETERA Y CONEXIÓN */
-        .wallet-info {
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .network-badge {
-            background-color: var(--accent-color);
-            color: var(--dark-color);
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .alert-container {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 1050;
-            max-width: 350px;
-        }
-        .connection-status {
-            font-size: 0.9rem;
-            color: #ccc;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; color: #333; }
+        .navbar { background-color: var(--primary-color); }
+        .navbar-brand { color: white !important; font-weight: bold; }
+        .hero-section { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 60px 0; }
+        .stats-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; transition: .3s; }
+        .stats-card:hover { transform: translateY(-5px); }
+        .footer { background-color: var(--dark-color); color: white; padding: 30px 0; margin-top: 50px; }
+        .wallet-info { color: white; display: flex; align-items: center; gap: 10px; }
+        .network-badge { background-color: var(--accent-color); color: var(--dark-color); padding: 3px 8px; border-radius: 12px; font-weight: bold; }
+        .loading-spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: white; animation: spin 1s infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .alert-container { position: fixed; top: 80px; right: 20px; z-index: 1050; max-width: 350px; }
     </style>
 </head>
 <body>
-
-    <!-- Alert Container -->
     <div class="alert-container" id="alertContainer"></div>
 
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="bi bi-tree-fill me-2"></i>Trazabilidad Ambiental CCOP
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#inicio">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#proyectos">Proyectos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#trazabilidad">Trazabilidad</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#nosotros">Nosotros</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center ms-3">
-                        <!-- El botón de conexión se manejará con JavaScript -->
-                        <div id="walletConnectionArea"></div>
-                    </li>
-                </ul>
-            </div>
+            <a class="navbar-brand"><i class="bi bi-tree-fill me-2"></i>Trazabilidad Ambiental CCOP</a>
+            <div id="walletConnectionArea"></div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section" id="inicio">
+    <section class="hero-section text-center">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">Trazabilidad Transparente de Recursos Ambientales</h1>
-                    <p class="lead mb-4">Conecta tu billetera para interactuar con la blockchain de Celo y seguir el camino de cada peso destinado a proyectos ambientales en Colombia.</p>
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-light btn-lg" onclick="scrollToSection('proyectos')">
-                            <i class="bi bi-search me-2"></i>Explorar Proyectos
-                        </button>
-                        <button class="btn btn-outline-light btn-lg" onclick="showHowItWorks()">
-                            <i class="bi bi-play-circle me-2"></i>Cómo Funciona
-                        </button>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="fund-flow">
-                        <div class="fund-step active">
-                            <i class="bi bi-cash"></i>
-                            <span class="fund-step-label">Fondos COP</span>
-                        </div>
-                        <div class="fund-step active">
-                            <i class="bi bi-currency-bitcoin"></i>
-                            <span class="fund-step-label">Conversión CCOP</span>
-                        </div>
-                        <div class="fund-step active">
-                            <i class="bi bi-clipboard-check"></i>
-                            <span class="fund-step-label">Asignación</span>
-                        </div>
-                        <div class="fund-step active">
-                            <i class="bi bi-tree"></i>
-                            <span class="fund-step-label">Impacto</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h1 class="fw-bold">Trazabilidad Transparente de Recursos Ambientales</h1>
+            <p class="lead">Conecta tu billetera para interactuar con la blockchain de Celo.</p>
+            <button class="btn btn-light btn-lg" onclick="connectWallet()"><i class="bi bi-wallet2 me-2"></i>Conectar Billetera</button>
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="container mb-5">
-        <div class="row">
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon"><i class="bi bi-currency-exchange"></i></div>
-                    <h3 class="fw-bold" id="totalFunds">$2.5B</h3>
-                    <p class="text-muted">Recursos Totales</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon"><i class="bi bi-diagram-3"></i></div>
-                    <h3 class="fw-bold" id="activeProjects">142</h3>
-                    <p class="text-muted">Proyectos Activos</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon"><i class="bi bi-people"></i></div>
-                    <h3 class="fw-bold">28</h3>
-                    <p class="text-muted">Organizaciones</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card text-center">
-                    <div class="card-icon"><i class="bi bi-check-circle"></i></div>
-                    <h3 class="fw-bold">89%</h3>
-                    <p class="text-muted">Trazabilidad Completa</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="container mb-5" id="proyectos">
-        <h2 class="mb-4">Explorar Proyectos</h2>
+    <section class="container my-5">
         <div class="row" id="projectsContainer">
-            <div class="col-12 text-center connection-status">
-                <i class="bi bi-wallet2" style="font-size: 3rem; color: #ccc;"></i>
-                <p class="mt-3">Por favor, conecta tu billetera MetaMask para ver los proyectos desde la blockchain.</p>
+            <div class="col-12 text-center text-muted">
+                <i class="bi bi-wallet2" style="font-size:3rem;"></i>
+                <p>Por favor, conecta tu billetera MetaMask para ver los proyectos.</p>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer text-center">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5 class="mb-3">Trazabilidad Ambiental CCOP</h5>
-                    <p>Plataforma blockchain para la gestión transparente de recursos ambientales en Colombia.</p>
+            <p class="mb-0">© 2025 Trazabilidad Ambiental CCOP. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- CONFIGURACIÓN DE BLOCKCHAIN ---
+        const CELO_MAINNET_RPC_URL = "https://forno.celo.org";
+        const CELO_CHAIN_ID = 42220;
+        const CELO_CHAIN_ID_HEX = "0xa4ec";
+        const CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"; // reemplaza con el tuyo
+        const CONTRACT_ABI = [];
+
+        let provider, signer, contract, userAddress = null;
+
+        // ALERTAS
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            alertContainer.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        // ACTUALIZAR UI DE CONEXIÓN
+        function updateWalletUI(isConnected) {
+            const walletArea = document.getElementById('walletConnectionArea');
+            if (isConnected && userAddress) {
+                const shortAddr = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+                walletArea.innerHTML = `
+                    <div class="wallet-info">
+                        <span class="network-badge">Celo</span>
+                        <span>${shortAddr}</span>
+                        <button class="btn btn-outline-light btn-sm" onclick="disconnectWallet()">Desconectar</button>
+                    </div>
+                `;
+            } else {
+                walletArea.innerHTML = `
+                    <button class="btn btn-outline-light" id="connectWalletBtn" onclick="connectWallet()">
+                        <i class="bi bi-wallet2 me-2"></i>Conectar Billetera
+                    </button>
+                `;
+            }
+        }
+
+        // CONECTAR A METAMASK
+        async function connectWallet() {
+            if (!window.ethereum) {
+                showAlert("MetaMask no está instalado.", "danger");
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAddress = accounts[0];
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                await checkAndSwitchNetwork();
+                updateWalletUI(true);
+                showAlert("Billetera conectada exitosamente.", "success");
+                loadOnChainData();
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, "danger");
+                updateWalletUI(false);
+            }
+        }
+
+        // CAMBIO DE RED
+        async function checkAndSwitchNetwork() {
+            const network = await provider.getNetwork();
+            if (network.chainId !== CELO_CHAIN_ID) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: CELO_CHAIN_ID_HEX }]
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: CELO_CHAIN_ID_HEX,
+                                chainName: 'Celo Mainnet',
+                                rpcUrls: [CELO_MAINNET_RPC_URL],
+                                nativeCurrency: { name: 'CELO', symbol: 'CELO', decimals: 18 },
+                                blockExplorerUrls: ['https://celoscan.io/']
+                            }]
+                        });
+                    } else {
+                        throw switchError;
+                    }
+                }
+            }
+        }
+
+        // DESCONECTAR
+        function disconnectWallet() {
+            userAddress = null;
+            updateWalletUI(false);
+            showAlert("Billetera desconectada.", "info");
+            document.getElementById('projectsContainer').innerHTML = `
+                <div class="col-12 text-center text-muted">
+                    <i class="bi bi-wallet2" style="font-size:3rem;"></i>
+                    <p>Por favor, conecta tu billetera MetaMask para ver los proyectos.</p>
                 </div>
-                <div class="col-md-4">
-                    <h5 class="mb-3">Enlaces</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white-50">Acerca de</a></li>
-                        <li><a href="#" class="text-white-50">Documentación técnica
+            `;
+        }
+
+        // CARGAR DATOS ONCHAIN
+        async function loadOnChainData() {
+            const container = document.getElementById('projectsContainer');
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-success">
+                        <h4>¡Conexión Exitosa!</h4>
+                        <p>Estás conectado con la dirección: <strong>${userAddress}</strong></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => updateWalletUI(false));
+    </script>
+</body>
+</html>
