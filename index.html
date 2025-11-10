@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -8,11 +8,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <!-- Stellar SDK reemplaza a Ethers.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk@12.2.0/lib/stellar-sdk.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root { --primary-color: #2E7D32; --secondary-color: #66BB6A; --accent-color: #4CAF50; --dark-color: #1B5E20; --light-bg: #F1F8E9; }
+        /* Colores actualizados al esquema de Stellar */
+        :root { --primary-color: #0B3D91; --secondary-color: #3F88C5; --accent-color: #00BFFF; --dark-color: #032248; --light-bg: #F0F8FF; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; }
         .navbar { background-color: var(--primary-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .navbar-brand, .nav-link { color: white !important; }
@@ -31,14 +33,14 @@
         .status-verified { background-color: #E8F5E9; color: #1B5E20; }
         .status-completed { background-color: #E8F5E9; color: #1B5E20; }
         .status-pending { background-color: #FFF3E0; color: #E65100; }
-        .cta-section { background: linear-gradient(rgba(46, 125, 50, 0.8), rgba(46, 125, 50, 0.8)), url('https://picsum.photos/seed/forest_team/1920/600.jpg') no-repeat center center/cover; color: white; padding: 80px 0; margin-top: 50px; }
+        .cta-section { background: linear-gradient(rgba(11, 61, 145, 0.8), rgba(11, 61, 145, 0.8)), url('https://picsum.photos/seed/forest_team/1920/600.jpg') no-repeat center center/cover; color: white; padding: 80px 0; margin-top: 50px; }
         .footer { background-color: var(--dark-color); color: white; padding: 30px 0; }
         .modal-header { background-color: var(--primary-color); color: white; }
         .timeline { position: relative; padding-left: 30px; }
         .timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background-color: var(--secondary-color); }
         .timeline-item { position: relative; margin-bottom: 30px; }
         .timeline-item::before { content: ''; position: absolute; left: -23px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background-color: var(--primary-color); border: 2px solid white; }
-        .timeline-item.active::before { background-color: var(--secondary-color); box-shadow: 0 0 0 4px rgba(102, 187, 106, 0.3); }
+        .timeline-item.active::before { background-color: var(--secondary-color); box-shadow: 0 0 0 4px rgba(63, 136, 197, 0.3); }
         .gallery-img { cursor: pointer; transition: transform 0.2s; width: 100%; border-radius: 8px; }
         .gallery-img:hover { transform: scale(1.05); }
         .section-title { border-bottom: 3px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 20px; }
@@ -76,7 +78,7 @@
     <section class="hero-section" id="inicio">
         <div class="container text-center">
             <h1 class="display-4 fw-bold mb-4">Transparencia y Trazabilidad Ambiental en Tiempo Real</h1>
-            <p class="lead mb-4">Proyectamos transparencia y trazabilidad para que ambos entes, ejecutor y financiador, puedan verificar en tiempo real cada etapa del ciclo de vida de un proyecto. Nuestra razón de ser es construir un puente de confianza inmutable entre la inversión y el impacto ambiental, utilizando tecnología blockchain para garantizar que cada recurso sea rastreado y cada resultado sea verificable.</p>
+            <p class="lead mb-4">Proyectamos transparencia y trazabilidad para que ambos entes, ejecutor y financiador, puedan verificar en tiempo real cada etapa del ciclo de vida de un proyecto. Nuestra razón de ser es construir un puente de confianza inmutable entre la inversión y el impacto ambiental, utilizando la red **Stellar Soroban** para garantizar que cada recurso sea rastreado y cada resultado sea verificable.</p>
             <div class="d-flex gap-3 justify-content-center">
                 <button class="btn btn-light btn-lg" onclick="scrollToSection('licitacion')">
                     <i class="bi bi-bullseye me-2"></i>Ver Proyectos en Licitación
@@ -91,7 +93,7 @@
             <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-bullseye"></i></div><h3 class="fw-bold">4</h3><p class="text-muted">Proyectos en Licitación</p></div></div>
             <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-diagram-3"></i></div><h3 class="fw-bold">3</h3><p class="text-muted">Proyectos Activos</p></div></div>
             <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-currency-exchange"></i></div><h3 class="fw-bold">$3.19B</h3><p class="text-muted">Capital en Movimiento</p></div></div>
-            <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-check-circle"></i></div><h3 class="fw-bold">100%</h3><p class="text-muted">Trazabilidad</p></div></div>
+            <div class="col-md-3 col-sm-6"><div class="stats-card"><div class="card-icon"><i class="bi bi-check-circle"></i></div><h3 class="fw-bold">100%</h3><p class="text-muted">Trazabilidad en Stellar</p></div></div>
         </section>
 
         <!-- Licitación Section -->
@@ -135,7 +137,7 @@
         <section class="container my-5">
             <h2 class="section-title">La Tecnología y el Talento Detrás de la Transparencia</h2>
             <p>Somos una plataforma descentralizada que fusiona la pericia en ciencias ambientales con la vanguardia en tecnología blockchain y finanzas digitales. Nuestro equipo multidisciplinario está compuesto por ingenieros de software especializados en smart contracts, científicos de datos con experiencia en monitoreo ambiental, y expertos en sostenibilidad que entienden los desafíos del terreno.</p>
-            <p>La arquitectura de Block's Resources se basa en contratos inteligentes desplegados en redes de bajo impacto como Celo, asegurando la accesibilidad y la eficiencia. Utilizamos oráculos descentralizados para integrar datos del mundo real (imágenes satelitales, sensores IoT) con la blockchain, creando un sistema de verificación híbrido que combina la automatización con la validación humana. Nuestro modelo de gobernanza evoluciona hacia una Organización Autónoma Descentralizada (DAO), donde los stakeholders pueden participar en la toma de decisiones clave, asegurando que la plataforma se adapte y crezca alineada con su propósito fundamental.</p>
+            <p>La arquitectura de Block's Resources se basa en contratos inteligentes desplegados en redes de bajo impacto como **Stellar Soroban**, asegurando la accesibilidad y la eficiencia. Utilizamos oráculos descentralizados para integrar datos del mundo real (imágenes satelitales, sensores IoT) con la blockchain, creando un sistema de verificación híbrido que combina la automatización con la validación humana. Nuestro modelo de gobernanza evoluciona hacia una Organización Autónoma Descentralizada (DAO), donde los stakeholders pueden participar en la toma de decisiones clave, asegurando que la plataforma se adapte y crezca alineada con su propósito fundamental.</p>
         </section>
 
     </main>
@@ -158,7 +160,7 @@
 
     <!-- Tech Credit -->
     <div class="tech-credit">
-        Prototipo desarrollado para la convocatoria Talento Tech Colombia 2025.
+        Prototipo desarrollado para la convocatoria Talento Tech Colombia 2025. Powered by Stellar Soroban.
     </div>
 
     <!-- Modal for Project Details (Licitación) -->
@@ -199,10 +201,10 @@
     <script>
         // --- DATOS DE PROYECTOS ---
         const mockLicitacionProjects = [
-            { id: 'LIC-001', title: "Corredor Biológico Quebrada La Vieja", image: "https://picsum.photos/seed/quebrada_vieja_forest/800/400.jpg", shortDescription: "Conexión de fragmentos de bosque para garantizar el paso de la fauna silvestre en el eje cafetero.", description: "Este proyecto busca restaurar y conectar 150 hectáreas de bosque de niebla fragmentadas en la cuenca de la Quebrada La Vieja, un área vital para la biodiversidad en el Quindío.", capital: 520000000, location: [4.1357, -75.2599], problem: "La expansión agrícola y ganadera ha fragmentado el bosque, aislando poblaciones de fauna y reduciendo su capacidad de dispersión y supervivencia.", solution: "Siembra de más de 200,000 árboles nativos, instalación de 10 pasos de fauna sobre vías, y creación de un programa de guardianes comunitarios.", impact: ["Conexión de 5 fragmentos de bosque", "Recuperación de 150 hectáreas", "Protección de 25 especies en riesgo", "Generación de 15 empleos verdes"], timeline: [{ phase: "Fase 1: Socialización", date: "2025-Q3", status: "completed" }, { phase: "Fase 2: Preparación de Suelos", date: "2025-Q4", status: "active" }, { phase: "Fase 3: Siembra", date: "2026-Q1", status: "pending" }, { phase: "Fase 4: Monitoreo", date: "2026-Q2", status: "pending" }], gallery: ["https://picsum.photos/seed/quebrada_vieja_1/800/600.jpg", "https://picsum.photos/seed/quebrada_vieja_2/800/600.jpg", "https://picsum.photos/seed/quebrada_vieja_3/800/600.jpg"], budgetBreakdown: [{ category: 'Vivero y Producción de Plantas', amount: 150000000 }, { category: 'Mano de Obra y Capacitación', amount: 180000000 }, { category: 'Infraestructura (Puentes Fauna)', amount: 120000000 }, { category: 'Monitoreo y Tecnología', amount: 70000000 }] },
-            { id: 'LIC-002', title: "Restauración de Praderas Marinas en Tayrona", image: "https://picsum.photos/seed/tayrona_seagrass/800/400.jpg", shortDescription: "Recuperación de 20 hectáreas de praderas marinas, hábitat crítico para el manatí y peces comerciales.", description: "Las praderas marinas del Parque Nacional Natural Tayrona han sufrido un grave deterioro. Este proyecto tiene como objetivo restaurar 20 hectáreas.", capital: 680000000, location: [11.3119, -73.9766], problem: "Anclaje de barcos, contaminación y cambio climático han destruido más del 50% de las praderas marinas en la última década.", solution: "Recolección de semillas, cultivo en laboratorios submarinos, siembra asistida por buzos y un programa de educación para los operadores turísticos.", impact: ["Restauración de 20 hectáreas de pradera", "Protección del hábitat del manatí", "Incremento del 30% en pesca artesanal", "Secuestro de 1,200 toneladas de CO2/año"], timeline: [{ phase: "Fase 1: Recolección de Semillas", date: "2025-Q4", status: "pending" }, { phase: "Fase 2: Cultivo en Vivero Marino", date: "2026-Q1", status: "pending" }, { phase: "Fase 3: Siembra", date: "2026-Q2", status: "pending" }, { phase: "Fase 4: Monitoreo Biológico", date: "2026-Q3", status: "pending" }], gallery: ["https://picsum.photos/seed/tayrona_seagrass_1/800/600.jpg", "https://picsum.photos/seed/tayrona_seagrass_2/800/600.jpg", "https://picsum.photos/seed/tayrona_manatee/800/600.jpg"], budgetBreakdown: [{ category: 'Equipos de Buceo y Laboratorio', amount: 250000000 }, { category: 'Personal Científico y Buzos', amount: 280000000 }, { category: 'Logística y Operaciones', amount: 100000000 }, { category: 'Comunidad y Educación', amount: 50000000 }] },
-            { id: 'LIC-003', title: "Laboratorio de Bioconstrucción", image: "https://picsum.photos/seed/bio_construction_lab/800/400.jpg", shortDescription: "Creación de un centro de innovación para fabricar ladrillos a partir de plásticos reciclados.", description: "Este proyecto establece un laboratorio en Cali para transformar plásticos de un solo uso en materiales de construcción ecológicos y duraderos.", capital: 750000000, location: [3.4516, -76.5319], problem: "Cali genera más de 800 toneladas de residuos plásticos al día, con una tasa de reciclaje muy baja.", solution: "Instalación de una planta de trituración, lavado y extrusión de plásticos. Desarrollo de 3 tipos de ladrillos ecológicos.", impact: ["Procesamiento de 5,000 toneladas de plástico/año", "Producción de 1.5M de ladrillos ecológicos", "Reducción del 70% de costos en materiales", "Creación de 40 empleos directos"], timeline: [{ phase: "Fase 1: Adecuación de Planta", date: "2025-Q3", status: "completed" }, { phase: "Fase 2: Instalación de Maquinaria", date: "2025-Q4", status: "active" }, { phase: "Fase 3: Producción Piloto", date: "2026-Q1", status: "pending" }, { phase: "Fase 4: Lanzamiento Comercial", date: "2026-Q2", status: "pending" }], gallery: ["https://picsum.photos/seed/bio_bricks_1/800/600.jpg", "https://picsum.photos/seed/bio_bricks_2/800/600.jpg", "https://picsum.photos/seed/bio_lab_machine/800/600.jpg"], budgetBreakdown: [{ category: 'Maquinaria Industrial', amount: 400000000 }, { category: 'Infraestructura y Adecuación', amount: 200000000 }, { category: 'Personal y Operación', amount: 100000000 }, { category: 'Certificación y Marketing', amount: 50000000 }] },
-            { id: 'LIC-004', title: "Guardianes del Páramo de Sumapaz", image: "https://picsum.photos/seed/paramo_sumapaz/800/400.jpg", shortDescription: "Fortalecimiento de la comunidad local para la protección del ecosistema de páramo más grande del mundo.", description: "Este proyecto empodera a las comunidades campesinas locales, formándolas como 'Guardianes del Páramo'.", capital: 350000000, location: [4.2167, -74.1833], problem: "La expansión de la frontera agrícola y la minería ilegal amenazan la regulación hídrica y la biodiversidad única del páramo.", solution: "Formación de 50 guardianes, restauración de 100 hectáreas con especies nativas, instalación de 20 viveros comunitarios.", impact: ["Restauración de 100 hectáreas", "Protección de 50 nacientes de agua", "Formación de 50 guardianes", "Generación de 25 emprendimientos verdes"], timeline: [{ phase: "Fase 1: Selección y Formación", date: "2025-Q4", status: "pending" }, { phase: "Fase 2: Establecimiento de Viveros", date: "2026-Q1", status: "pending" }, { phase: "Fase 3: Restauración Ecológica", date: "2026-Q2", status: "pending" }, { phase: "Fase 4: Desarrollo de Eco-Turismo", date: "2026-Q3", status: "pending" }], gallery: ["https://picsum.photos/seed/paramo_sumapaz_1/800/600.jpg", "https://picsum.photos/seed/paramo_guardian/800/600.jpg", "https://picsum.photos/seed/paramo_water/800/600.jpg"], budgetBreakdown: [{ category: 'Capacitación y Educación', amount: 120000000 }, { category: 'Insumos para Restauración', amount: 100000000 }, { category: 'Equipos y Herramientas', amount: 80000000 }, { category: 'Fomento de Eco-Turismo', amount: 50000000 }] }
+            { id: 'LIC-001', title: "Corredor Biológico Quebrada La Vieja", image: "https://picsum.photos/seed/quebrada_vieja_forest/800/400.jpg", shortDescription: "Conexión de fragmentos de bosque para garantizar el paso de la fauna silvestre en el eje cafetero.", description: "Este proyecto busca restaurar y conectar 150 hectáreas de bosque de niebla fragmentadas en la cuenca de la Quebrada La Vieja, un área vital para la biodiversidad en el Quindío.", capital: 520000000, xlmAmount: 1300, location: [4.1357, -75.2599], problem: "La expansión agrícola y ganadera ha fragmentado el bosque, aislando poblaciones de fauna y reduciendo su capacidad de dispersión y supervivencia.", solution: "Siembra de más de 200,000 árboles nativos, instalación de 10 pasos de fauna sobre vías, y creación de un programa de guardianes comunitarios.", impact: ["Conexión de 5 fragmentos de bosque", "Recuperación de 150 hectáreas", "Protección de 25 especies en riesgo", "Generación de 15 empleos verdes"], timeline: [{ phase: "Fase 1: Socialización", date: "2025-Q3", status: "completed" }, { phase: "Fase 2: Preparación de Suelos", date: "2025-Q4", status: "active" }, { phase: "Fase 3: Siembra", date: "2026-Q1", status: "pending" }, { phase: "Fase 4: Monitoreo", date: "2026-Q2", status: "pending" }], gallery: ["https://picsum.photos/seed/quebrada_vieja_1/800/600.jpg", "https://picsum.photos/seed/quebrada_vieja_2/800/600.jpg", "https://picsum.photos/seed/quebrada_vieja_3/800/600.jpg"], budgetBreakdown: [{ category: 'Vivero y Producción de Plantas', amount: 150000000 }, { category: 'Mano de Obra y Capacitación', amount: 180000000 }, { category: 'Infraestructura (Puentes Fauna)', amount: 120000000 }, { category: 'Monitoreo y Tecnología', amount: 70000000 }] },
+            { id: 'LIC-002', title: "Restauración de Praderas Marinas en Tayrona", image: "https://picsum.photos/seed/tayrona_seagrass/800/400.jpg", shortDescription: "Recuperación de 20 hectáreas de praderas marinas, hábitat crítico para el manatí y peces comerciales.", description: "Las praderas marinas del Parque Nacional Natural Tayrona han sufrido un grave deterioro. Este proyecto tiene como objetivo restaurar 20 hectáreas.", capital: 680000000, xlmAmount: 1700, location: [11.3119, -73.9766], problem: "Anclaje de barcos, contaminación y cambio climático han destruido más del 50% de las praderas marinas en la última década.", solution: "Recolección de semillas, cultivo en laboratorios submarinos, siembra asistida por buzos y un programa de educación para los operadores turísticos.", impact: ["Restauración de 20 hectáreas de pradera", "Protección del hábitat del manatí", "Incremento del 30% en pesca artesanal", "Secuestro de 1,200 toneladas de CO2/año"], timeline: [{ phase: "Fase 1: Recolección de Semillas", date: "2025-Q4", status: "pending" }, { phase: "Fase 2: Cultivo en Vivero Marino", date: "2026-Q1", status: "pending" }, { phase: "Fase 3: Siembra", date: "2026-Q2", status: "pending" }, { phase: "Fase 4: Monitoreo Biológico", date: "2026-Q3", status: "pending" }], gallery: ["https://picsum.photos/seed/tayrona_seagrass_1/800/600.jpg", "https://picsum.photos/seed/tayrona_seagrass_2/800/600.jpg", "https://picsum.photos/seed/tayrona_manatee/800/600.jpg"], budgetBreakdown: [{ category: 'Equipos de Buceo y Laboratorio', amount: 250000000 }, { category: 'Personal Científico y Buzos', amount: 280000000 }, { category: 'Logística y Operaciones', amount: 100000000 }, { category: 'Comunidad y Educación', amount: 50000000 }] },
+            { id: 'LIC-003', title: "Laboratorio de Bioconstrucción", image: "https://picsum.photos/seed/bio_construction_lab/800/400.jpg", shortDescription: "Creación de un centro de innovación para fabricar ladrillos a partir de plásticos reciclados.", description: "Este proyecto establece un laboratorio en Cali para transformar plásticos de un solo uso en materiales de construcción ecológicos y duraderos.", capital: 750000000, xlmAmount: 1875, location: [3.4516, -76.5319], problem: "Cali genera más de 800 toneladas de residuos plásticos al día, con una tasa de reciclaje muy baja.", solution: "Instalación de una planta de trituración, lavado y extrusión de plásticos. Desarrollo de 3 tipos de ladrillos ecológicos.", impact: ["Procesamiento de 5,000 toneladas de plástico/año", "Producción de 1.5M de ladrillos ecológicos", "Reducción del 70% de costos en materiales", "Creación de 40 empleos directos"], timeline: [{ phase: "Fase 1: Adecuación de Planta", date: "2025-Q3", status: "completed" }, { phase: "Fase 2: Instalación de Maquinaria", date: "2025-Q4", status: "active" }, { phase: "Fase 3: Producción Piloto", date: "2026-Q1", status: "pending" }, { phase: "Fase 4: Lanzamiento Comercial", date: "2026-Q2", status: "pending" }], gallery: ["https://picsum.photos/seed/bio_bricks_1/800/600.jpg", "https://picsum.photos/seed/bio_bricks_2/800/600.jpg", "https://picsum.photos/seed/bio_lab_machine/800/600.jpg"], budgetBreakdown: [{ category: 'Maquinaria Industrial', amount: 400000000 }, { category: 'Infraestructura y Adecuación', amount: 200000000 }, { category: 'Personal y Operación', amount: 100000000 }, { category: 'Certificación y Marketing', amount: 50000000 }] },
+            { id: 'LIC-004', title: "Guardianes del Páramo de Sumapaz", image: "https://picsum.photos/seed/paramo_sumapaz/800/400.jpg", shortDescription: "Fortalecimiento de la comunidad local para la protección del ecosistema de páramo más grande del mundo.", description: "Este proyecto empodera a las comunidades campesinas locales, formándolas como 'Guardianes del Páramo'.", capital: 350000000, xlmAmount: 875, location: [4.2167, -74.1833], problem: "La expansión de la frontera agrícola y la minería ilegal amenazan la regulación hídrica y la biodiversidad única del páramo.", solution: "Formación de 50 guardianes, restauración de 100 hectáreas con especies nativas, instalación de 20 viveros comunitarios.", impact: ["Restauración de 100 hectáreas", "Protección de 50 nacientes de agua", "Formación de 50 guardianes", "Generación de 25 emprendimientos verdes"], timeline: [{ phase: "Fase 1: Selección y Formación", date: "2025-Q4", status: "pending" }, { phase: "Fase 2: Establecimiento de Viveros", date: "2026-Q1", status: "pending" }, { phase: "Fase 3: Restauración Ecológica", date: "2026-Q2", status: "pending" }, { phase: "Fase 4: Desarrollo de Eco-Turismo", date: "2026-Q3", status: "pending" }], gallery: ["https://picsum.photos/seed/paramo_sumapaz_1/800/600.jpg", "https://picsum.photos/seed/paramo_guardian/800/600.jpg", "https://picsum.photos/seed/paramo_water/800/600.jpg"], budgetBreakdown: [{ category: 'Capacitación y Educación', amount: 120000000 }, { category: 'Insumos para Restauración', amount: 100000000 }, { category: 'Equipos y Herramientas', amount: 80000000 }, { category: 'Fomento de Eco-Turismo', amount: 50000000 }] }
         ];
 
         const mockActiveProjects = [
@@ -211,6 +213,7 @@
                 title: "Reforestación del Alto Magdalena", 
                 image: "https://picsum.photos/seed/rio_magdalena_canoa/800/400.jpg",
                 amount: "295000000", 
+                xlmAmount: 737.5,
                 progress: 78, 
                 status: "in-progress", 
                 description: "Proyecto de reforestación de 500 hectáreas en la cuenca alta del río Magdalena.", 
@@ -227,13 +230,14 @@
                 title: "Protección de Corales en San Andrés", 
                 image: "https://picsum.photos/seed/san_andres_coral_reef/800/400.jpg",
                 amount: "310000000", 
+                xlmAmount: 775,
                 progress: 100, 
                 status: "verified", 
                 description: "Protección y restauración de 15 hectáreas de arrecifes de coral en el archipiélago de San Andrés y Providencia.", 
                 location: [12.5847, -81.7006],
                 executionSummary: "El proyecto ha sido completado exitosamente. Se han restaurado las 15 hectáreas planificadas mediante la técnica de micro-fragmentación, logrando un crecimiento acelerado de los corales. Se ha capacitado a más de 30 buzos locales en técnicas de monitoreo y restauración.",
                 intervenedAreas: [
-                    { areaName: "Arrecife Barú", hectares: 5, description: "Sitio piloto para la restauración. Se han plantado más de 5,000 fragmentos de coral de las especies *Acropora palmata* y *Montastraea annularis*.", status: "Completado", photo: "https://picsum.photos/seed/coral_area1/600/400.jpg" },
+                    { areaName: "Arrecife Barú", hectares: 5, description: "Sitio piloto para la restauración. Se han plantado más de 5,000 fragmentos de coral de las especies Acropora palmata y Montastraea annularis.", status: "Completado", photo: "https://picsum.photos/seed/coral_area1/600/400.jpg" },
                     { areaName: "Cayo Johnny", hectares: 6, description: "Área de alta biodiversidad. Se ha logrado un 90% de cobertura de coral vivo y se ha observado el retorno de especies de peces ornamentales.", status: "Completado", photo: "https://picsum.photos/seed/coral_area2/600/400.jpg" },
                     { areaName: "Bajo Burbujas", hectares: 4, description: "Zona de buceo popular. Se han instalado estructuras para mitigar el daño del turismo y se ha establecido un programa de guardianes de arrecife.", status: "Completado", photo: "https://picsum.photos/seed/coral_area3/600/400.jpg" }
                 ]
@@ -243,6 +247,7 @@
                 title: "Energía Solar para Chocó", 
                 image: "https://picsum.photos/seed/choco_solar_panels/800/400.jpg", 
                 amount: "285000000", 
+                xlmAmount: 712.5,
                 progress: 45, 
                 status: "in-progress", 
                 description: "Instalación de paneles solares en 15 comunidades rulales del Chocó.", 
@@ -264,7 +269,30 @@
             updateWalletUI(false);
         });
 
-        function loadLicitacionProjects() { const container = document.getElementById('licitacionContainer'); container.innerHTML = ''; mockLicitacionProjects.forEach(project => { const card = document.createElement('div'); card.className = 'col-md-6 col-lg-4'; card.innerHTML = `<div class="licitacion-card h-100"><img src="${project.image}" class="licitacion-img" alt="${project.title}"><div class="licitacion-header">ID: ${project.id}</div><div class="card-body d-flex flex-column"><h5>${project.title}</h5><p class="flex-grow-1">${project.shortDescription}</p><h6 class="mt-3">Monto Estimado:</h6><p class="amount-highlight">$ ${project.capital.toLocaleString('es-CO')} COP</p><button class="btn btn-primary w-100 mt-3" onclick="showProjectDetailModal('${project.id}')"><i class="bi bi-eye-fill me-2"></i>Ver Detalles Completos</button></div></div>`; container.appendChild(card); }); }
+        function loadLicitacionProjects() { 
+            const container = document.getElementById('licitacionContainer'); 
+            container.innerHTML = ''; 
+            mockLicitacionProjects.forEach(project => { 
+                const card = document.createElement('div'); 
+                card.className = 'col-md-6 col-lg-4'; 
+                card.innerHTML = `
+                    <div class="licitacion-card h-100">
+                        <img src="${project.image}" class="licitacion-img" alt="${project.title}">
+                        <div class="licitacion-header">ID: ${project.id}</div>
+                        <div class="card-body d-flex flex-column">
+                            <h5>${project.title}</h5>
+                            <p class="flex-grow-1">${project.shortDescription}</p>
+                            <h6 class="mt-3">Inversión Requerida:</h6>
+                            <p class="amount-highlight">${project.xlmAmount.toLocaleString('es-CO')} XLM</p>
+                            <button class="btn btn-primary w-100 mt-3" onclick="showProjectDetailModal('${project.id}')">
+                                <i class="bi bi-eye-fill me-2"></i>Ver Detalles Completos
+                            </button>
+                        </div>
+                    </div>
+                `; 
+                container.appendChild(card); 
+            }); 
+        }
         
         function loadActiveProjects() {
             const container = document.getElementById('projectsContainer');
@@ -279,7 +307,8 @@
                         <div class="project-header">${project.title}</div>
                         <div class="card-body">
                             <p class="mb-2">${project.description}</p>
-                            <div class="amount-highlight">$ ${parseInt(project.amount).toLocaleString('es-CO')} COP</div>
+                            <div class="amount-highlight">${project.xlmAmount.toLocaleString('es-CO')} XLM</div>
+                            <small class="text-muted">($ ${parseInt(project.amount).toLocaleString('es-CO')} COP)</small>
                             <div class="progress-container my-3">
                                 <div class="progress"><div class="progress-bar" style="width: ${project.progress}%"></div></div>
                                 <small class="text-muted">${project.progress}% completado</small>
@@ -295,10 +324,99 @@
             });
         }
         
-        function initializeMap() { const map = L.map('map').setView([4.5709, -74.2973], 5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map); const allProjects = [...mockLicitacionProjects, ...mockActiveProjects]; allProjects.forEach(project => { const popupContent = `<img src="${project.image}" style="width:200px; height:100px; object-fit:cover; border-radius:5px;"><h6>${project.title}</h6><p>${project.shortDescription || project.description.substring(0, 100)}...</p>`; L.marker(project.location).addTo(map).bindPopup(popupContent); }); }
+        function initializeMap() { 
+            const map = L.map('map').setView([4.5709, -74.2973], 5); 
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map); 
+            const allProjects = [...mockLicitacionProjects, ...mockActiveProjects]; 
+            allProjects.forEach(project => { 
+                const popupContent = `
+                    <img src="${project.image}" style="width:200px; height:100px; object-fit:cover; border-radius:5px;">
+                    <h6>${project.title}</h6>
+                    <p>${project.shortDescription || project.description.substring(0, 100)}...</p>
+                `; 
+                L.marker(project.location).addTo(map).bindPopup(popupContent); 
+            }); 
+        }
 
         // --- MODAL DE DETALLES (Licitación) ---
-        function showProjectDetailModal(projectId) { const project = mockLicitacionProjects.find(p => p.id === projectId); if (!project) return; const modalTitle = document.getElementById('projectDetailModalTitle'); const modalBody = document.getElementById('projectDetailModalBody'); modalTitle.innerText = project.title; modalBody.innerHTML = `<div class="row"><div class="col-md-8"><img src="${project.image}" class="img-fluid rounded mb-4" alt="${project.title}"><h4 class="section-title">Descripción General</h4><p>${project.description}</p><div class="row mt-4"><div class="col-md-6"><h5>El Problema</h5><p>${project.problem}</p></div><div class="col-md-6"><h5>Nuestra Solución</h5><p>${project.solution}</p></div></div><h4 class="section-title mt-4">Impacto Esperado</h4><div class="row">${project.impact.map(item => `<div class="col-md-6 mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>${item}</div>`).join('')}</div><h4 class="section-title mt-4">Cronograma</h4><div class="timeline">${project.timeline.map(item => `<div class="timeline-item ${item.status}"><h6>${item.phase}</h6><p class="text-muted mb-0">${item.date}</p></div>`).join('')}</div></div><div class="col-md-4"><div class="card"><div class="card-body"><h5>Presupuesto Total</h5><p class="amount-highlight">$ ${project.capital.toLocaleString('es-CO')} COP</p><canvas id="budgetChart" width="400" height="400"></canvas></div></div></div></div><h4 class="section-title mt-4">Galería del Proyecto</h4><div class="row g-3">${project.gallery.map(img => `<div class="col-md-4"><img src="${img}" class="gallery-img" alt="Galería"></div>`).join('')}</div>`; const modal = new bootstrap.Modal(document.getElementById('projectDetailModal')); modal.show(); setTimeout(() => { const ctx = document.getElementById('budgetChart'); if(ctx) { new Chart(ctx, { type: 'doughnut', data: { labels: project.budgetBreakdown.map(item => item.category), datasets: [{ data: project.budgetBreakdown.map(item => item.amount), backgroundColor: ['#2E7D32', '#66BB6A', '#81C784', '#A5D6A7'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; if (label) { label += ': '; } if (context.parsed !== null) { label += new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(context.parsed); } return label; } } } } } }); } }, 300); }
+        function showProjectDetailModal(projectId) { 
+            const project = mockLicitacionProjects.find(p => p.id === projectId); 
+            if (!project) return; 
+            const modalTitle = document.getElementById('projectDetailModalTitle'); 
+            const modalBody = document.getElementById('projectDetailModalBody'); 
+            modalTitle.innerText = project.title; 
+            modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="${project.image}" class="img-fluid rounded mb-4" alt="${project.title}">
+                        <h4 class="section-title">Descripción General</h4>
+                        <p>${project.description}</p>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>El Problema</h5>
+                                <p>${project.problem}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Nuestra Solución</h5>
+                                <p>${project.solution}</p>
+                            </div>
+                        </div>
+                        <h4 class="section-title mt-4">Impacto Esperado</h4>
+                        <div class="row">${project.impact.map(item => `<div class="col-md-6 mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>${item}</div>`).join('')}</div>
+                        <h4 class="section-title mt-4">Cronograma</h4>
+                        <div class="timeline">${project.timeline.map(item => `<div class="timeline-item ${item.status}"><h6>${item.phase}</h6><p class="text-muted mb-0">${item.date}</p></div>`).join('')}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Presupuesto Total</h5>
+                                <p class="amount-highlight">$ ${project.capital.toLocaleString('es-CO')} COP</p>
+                                <p class="text-muted">≈ ${project.xlmAmount.toLocaleString('es-CO')} XLM</p>
+                                <canvas id="budgetChart" width="400" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="section-title mt-4">Galería del Proyecto</h4>
+                <div class="row g-3">${project.gallery.map(img => `<div class="col-md-4"><img src="${img}" class="gallery-img" alt="Galería"></div>`).join('')}</div>
+            `; 
+            const modal = new bootstrap.Modal(document.getElementById('projectDetailModal')); 
+            modal.show(); 
+            setTimeout(() => { 
+                const ctx = document.getElementById('budgetChart'); 
+                if(ctx) { 
+                    new Chart(ctx, { 
+                        type: 'doughnut', 
+                        data: { 
+                            labels: project.budgetBreakdown.map(item => item.category), 
+                            datasets: [{ 
+                                data: project.budgetBreakdown.map(item => item.amount), 
+                                backgroundColor: ['#0B3D91', '#3F88C5', '#00BFFF', '#87CEEB'] // Colores de Stellar
+                            }] 
+                        }, 
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            plugins: { 
+                                legend: { position: 'bottom' }, 
+                                tooltip: { 
+                                    callbacks: { 
+                                        label: function(context) { 
+                                            let label = context.label || ''; 
+                                            if (label) { label += ': '; } 
+                                            if (context.parsed !== null) { 
+                                                label += new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(context.parsed); 
+                                            } 
+                                            return label; 
+                                        } 
+                                    } 
+                                } 
+                            } 
+                        } 
+                    }); 
+                } 
+            }, 300); 
+        }
 
         // --- MODAL DE EJECUCIÓN (Proyectos Activos) ---
         function showProjectExecutionModal(projectId) {
@@ -306,15 +424,71 @@
             if (!project) return;
             const modalTitle = document.getElementById('projectExecutionModalTitle'); const modalBody = document.getElementById('projectExecutionModalBody');
             modalTitle.innerText = `Avance del Proyecto: ${project.title}`;
-            modalBody.innerHTML = `<h4 class="section-title">Resumen de la Ejecución</h4><p>${project.executionSummary}</p><h4 class="section-title mt-4">Áreas Intervenidas</h4><div class="row">${project.intervenedAreas.map(area => `<div class="col-md-6 col-lg-4 mb-4"><div class="area-card"><img src="${area.photo}" class="img-fluid rounded mb-3" alt="${area.areaName}"><h5>${area.areaName}</h5><p><strong>Hectáreas:</strong> ${area.hectares}</p><p>${area.description}</p><span class="badge-status status-${area.status.toLowerCase().replace(' ', '-')}">${area.status}</span></div></div>`).join('')}</div>`;
+            modalBody.innerHTML = `
+                <h4 class="section-title">Resumen de la Ejecución</h4>
+                <p>${project.executionSummary}</p>
+                <h4 class="section-title mt-4">Áreas Intervenidas</h4>
+                <div class="row">${project.intervenedAreas.map(area => `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="area-card">
+                            <img src="${area.photo}" class="img-fluid rounded mb-3" alt="${area.areaName}">
+                            <h5>${area.areaName}</h5>
+                            <p><strong>Hectáreas:</strong> ${area.hectares}</p>
+                            <p>${area.description}</p>
+                            <span class="badge-status status-${area.status.toLowerCase().replace(' ', '-')}">${area.status}</span>
+                        </div>
+                    </div>
+                `).join('')}</div>
+            `;
             const modal = new bootstrap.Modal(document.getElementById('projectExecutionModal')); modal.show();
         }
 
         // --- FUNCIONES AUXILIARES ---
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
-        function updateWalletUI(isConnected) { const walletArea = document.getElementById('walletConnectionArea'); if (isConnected && userAddress) { const shortAddress = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`; walletArea.innerHTML = `<div class="d-flex align-items-center gap-2"><span class="badge bg-success">Celo</span><span>${shortAddress}</span></div>`; } else { walletArea.innerHTML = `<button class="btn btn-outline-light" id="connectWalletBtn" onclick="connectWallet()"><i class="bi bi-wallet2 me-2"></i>Conectar Billetera</button>`; } }
-        let provider, signer, userAddress = null;
-        async function connectWallet() { alert("Función de conexión de billetera simulada."); }
+        
+        // --- LÓGICA DE STELLAR / FREIGHTER ---
+        let userPublicKey = null;
+
+        function updateWalletUI(isConnected) { 
+            const walletArea = document.getElementById('walletConnectionArea'); 
+            if (isConnected && userPublicKey) { 
+                const shortAddress = `${userPublicKey.substring(0, 6)}...${userPublicKey.substring(userPublicKey.length - 4)}`; 
+                walletArea.innerHTML = `
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary">Stellar</span>
+                        <span>${shortAddress}</span>
+                    </div>
+                `; 
+            } else { 
+                walletArea.innerHTML = `
+                    <button class="btn btn-outline-light" id="connectWalletBtn" onclick="connectWallet()">
+                        <i class="bi bi-wallet2 me-2"></i>Conectar Freighter
+                    </button>
+                `; 
+            } 
+        }
+
+        async function connectWallet() {
+            if (!window.freighter) {
+                alert("Por favor, instala la extensión de Freighter Wallet para continuar.");
+                window.open('https://freighter.app', '_blank');
+                return;
+            }
+
+            try {
+                const isConnected = await window.freighter.isConnected();
+                if (isConnected) {
+                    userPublicKey = await window.freighter.getPublicKey();
+                    updateWalletUI(true);
+                    alert("Billetera conectada con éxito.");
+                } else {
+                    alert("Por favor, autoriza la conexión en Freighter.");
+                }
+            } catch (error) {
+                console.error("Error al conectar con Freighter:", error);
+                alert("No se pudo conectar la billetera. Asegúrate de que Freighter esté desbloqueado.");
+            }
+        }
     </script>
 </body>
 </html>
